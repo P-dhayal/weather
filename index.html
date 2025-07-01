@@ -133,6 +133,7 @@
         // Return weather icon based on description
         function getWeatherIcon(weather) {
             if (!weather) return '';
+            console.log('Processing weather description:', weather); // Debug log
             weather = weather.toLowerCase();
             if (weather === 'sunny') return '☀️';
             if (weather.includes('cloud')) return '☁️';
@@ -143,18 +144,24 @@
         // Parse date from different formats in the JSON
         function parseDate(entry) {
             if (entry.time_epoch) {
+                console.log('Parsing time_epoch:', entry.time_epoch); // Debug log
                 return new Date(entry.time_epoch * 1000);
             } else if (entry.time) {
+                console.log('Parsing time:', entry.time); // Debug log
                 return new Date(entry.time);
             } else if (entry.dt_txt) {
+                console.log('Parsing dt_txt:', entry.dt_txt); // Debug log
                 return new Date(entry.dt_txt);
             }
+            console.warn('No valid date field found in entry:', entry); // Debug log
             return new Date();
         }
 
         // Format time display
         function formatTime(date) {
-            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const formatted = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            console.log('Formatted time:', formatted); // Debug log
+            return formatted;
         }
 
         // Format date display
@@ -181,21 +188,29 @@
         // Process and display weather data
         async function loadWeatherData() {
             try {
+                console.log('Fetching weather_data.json'); // Debug log
                 const response = await fetch('weather_data.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
                 const weatherData = await response.json();
+                console.log('Loaded weather data:', weatherData); // Debug log
                 
                 // Find current date (July 2, 2025)
-                const currentDate = new Date('2025-07-02T00:00 dejamos
+                const currentDate = new Date('2025-07-02T00:00:00');
                 const currentDateStr = currentDate.toISOString().split('T')[0];
                 
                 // Get current day data (8 times per day)
                 const currentDayData = weatherData.current_data || [];
+                console.log('Current day data:', currentDayData); // Debug log
                 
                 // Get forecast data (next days)
                 const forecastData = weatherData.forecast_data || [];
+                console.log('Forecast data:', forecastData); // Debug log
                 
                 // Get past data (2 days before)
                 const pastData = weatherData.past_data || [];
+                console.log('Past data:', pastData); // Debug log
 
                 // Update UI headers
                 document.getElementById('date-range').textContent = 
@@ -238,7 +253,8 @@
 
             } catch (error) {
                 console.error('Error loading weather data:', error);
-                document.getElementById('current-hourly').innerHTML = '<p>Error loading weather data</p>';
+                document.getElementById('current-hourly').innerHTML = '<p>Error loading weather data: ' + error.message + '</p>';
+                document.getElementById('forecast-days').innerHTML = '<p>Error loading forecast data: ' + error.message + '</p>';
             }
         }
 
@@ -354,6 +370,7 @@
             container.innerHTML = '';
 
             if (!forecastData || forecastData.length === 0) {
+                console.warn('No forecast data available'); // Debug log
                 container.innerHTML = '<p>No forecast data available</p>';
                 return;
             }
@@ -363,21 +380,32 @@
 
             // Filter and sort forecast data for July 3
             const day1Entries = forecastData
-                .filter(entry => entry.dt_txt && entry.dt_txt.startsWith('2025-07-03'))
+                .filter(entry => {
+                    const isMatch = entry.dt_txt && entry.dt_txt.startsWith('2025-07-03');
+                    console.log('July 3 filter:', entry.dt_txt, isMatch); // Debug log
+                    return isMatch;
+                })
                 .sort((a, b) => {
-                    const timeA = a.dt_txt.split(' ')[1];
-                    const timeB = b.dt_txt.split(' ')[1];
+                    const timeA = a.dt_txt ? a.dt_txt.split(' ')[1] : '';
+                    const timeB = b.dt_txt ? b.dt_txt.split(' ')[1] : '';
                     return expectedTimes.indexOf(timeA) - expectedTimes.indexOf(timeB);
                 });
 
             // Filter and sort forecast data for July 4
             const day2Entries = forecastData
-                .filter(entry => entry.dt_txt && entry.dt_txt.startsWith('2025-07-04'))
+                .filter(entry => {
+                    const isMatch = entry.dt_txt && entry.dt_txt.startsWith('2025-07-04');
+                    console.log('July 4 filter:', entry.dt_txt, isMatch); // Debug log
+                    return isMatch;
+                })
                 .sort((a, b) => {
-                    const timeA = a.dt_txt.split(' ')[1];
-                    const timeB = b.dt_txt.split(' ')[1];
+                    const timeA = a.dt_txt ? a.dt_txt.split(' ')[1] : '';
+                    const timeB = b.dt_txt ? b.dt_txt.split(' ')[1] : '';
                     return expectedTimes.indexOf(timeA) - expectedTimes.indexOf(timeB);
                 });
+
+            console.log('July 3 entries:', day1Entries); // Debug log
+            console.log('July 4 entries:', day2Entries); // Debug log
 
             // Display July 3
             if (day1Entries.length > 0) {
@@ -395,6 +423,8 @@
                                 const rainChance = Math.round((entry.pop || entry.chance_of_rain || 0) * 100);
                                 const windSpeed = (entry.wind?.speed || entry.wind_speed || (entry.wind_kph ? entry.wind_kph / 3.6 : 0)).toFixed(1) || '--';
                                 
+                                console.log('July 3 entry:', { time, weatherDesc, temp, humidity, rainChance, windSpeed }); // Debug log
+                                
                                 return `
                                     <div class="hourly-card">
                                         <div class="hourly-time">${time}</div>
@@ -410,6 +440,7 @@
                     </div>
                 `;
             } else {
+                console.warn('No data for July 3'); // Debug log
                 container.innerHTML += `
                     <div class="mb-4">
                         <h4>Wednesday, 3rd July</h4>
@@ -434,6 +465,8 @@
                                 const rainChance = Math.round((entry.pop || entry.chance_of_rain || 0) * 100);
                                 const windSpeed = (entry.wind?.speed || entry.wind_speed || (entry.wind_kph ? entry.wind_kph / 3.6 : 0)).toFixed(1) || '--';
                                 
+                                console.log('July 4 entry:', { time, weatherDesc, temp, humidity, rainChance, windSpeed }); // Debug log
+                                
                                 return `
                                     <div class="hourly-card">
                                         <div class="hourly-time">${time}</div>
@@ -449,6 +482,7 @@
                     </div>
                 `;
             } else {
+                console.warn('No data for July 4'); // Debug log
                 container.innerHTML += `
                     <div class="mb-4">
                         <h4>Thursday, 4th July</h4>
