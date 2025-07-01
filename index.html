@@ -12,8 +12,6 @@
         .weather-card { border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .table-responsive { overflow-x: auto; }
         .chart-container { position: relative; height: 300px; margin-bottom: 30px; }
-        .weather-icon { font-size: 1.5em; vertical-align: middle; }
-        .current-weather-icon { font-size: 3em; margin-bottom: 10px; }
         .time-column { white-space: nowrap; }
         .hourly-weather { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
         .hourly-card { 
@@ -131,11 +129,6 @@
     </footer>
 
     <script>
-        // Use only cloud icon for all weather conditions
-        function getWeatherIcon(weather, isDay = 1) {
-            return '☁️';
-        }
-
         // Parse date from different formats in the JSON
         function parseDate(entry) {
             if (entry.time_epoch) {
@@ -250,7 +243,6 @@
             hourlyData.forEach(entry => {
                 const date = parseDate(entry);
                 const time = formatTime(date);
-                const isDay = isDayTime(entry);
                 
                 // Get weather description
                 let weatherDesc = entry.condition?.text;
@@ -278,7 +270,6 @@
                 container.innerHTML += `
                     <div class="hourly-card">
                         <div class="hourly-time">${time}</div>
-                        <div class="weather-icon">${getWeatherIcon(weatherDesc, isDay)}</div>
                         <div class="hourly-temp">${temp}°C</div>
                         <div>${weatherDesc || '--'}</div>
                         <small>Rain: ${rainChance || '--'}%</small><br>
@@ -300,7 +291,6 @@
             tableData.forEach(entry => {
                 const date = parseDate(entry);
                 const hour = date.getHours();
-                const isDay = isDayTime(entry);
                 
                 // Only show 6AM, 12PM, 6PM, 12AM for past data
                 if ([0, 6, 12, 18].includes(hour)) {
@@ -333,7 +323,7 @@
                     tableBody.innerHTML += `
                         <tr>
                             <td>${formatTableDate(date)}</td>
-                            <td><span class="weather-icon">${getWeatherIcon(weatherDesc, isDay)}</span> ${weatherDesc || '--'}</td>
+                            <td>${weatherDesc || '--'}</td>
                             <td>${temp}</td>
                             <td>${humidity}</td>
                             <td>${rainChance || '--'}</td>
@@ -364,8 +354,8 @@
             const nextDay2 = new Date(currentDate);
             nextDay2.setDate(currentDate.getDate() + 2); // July 4
 
-            const day1Str = nextDay1.toISOString().split('T')[0];
-            const day2Str = nextDay2.toISOString().split('T')[0];
+            const day1Str = '2025-07-03';
+            const day2Str = '2025-07-04';
 
             // Filter forecast data for July 3 and 4
             const day1Entries = forecastData.filter(entry => {
@@ -389,15 +379,14 @@
                                 const date = parseDate(entry);
                                 const time = formatTime(date);
                                 const weatherDesc = entry.weather?.[0]?.description || entry.condition?.text || '--';
-                                const isDay = isDayTime(entry);
                                 const temp = entry.main?.temp || entry.temp_c || '--';
+                                const humidity = entry.main?.humidity || entry.humidity || '--';
                                 const rainChance = Math.round((entry.pop || entry.chance_of_rain || 0) * 100);
                                 const windSpeed = (entry.wind?.speed || entry.wind_speed || (entry.wind_kph ? entry.wind_kph / 3.6 : 0)).toFixed(1) || '--';
                                 
                                 return `
                                     <div class="hourly-card">
                                         <div class="hourly-time">${time}</div>
-                                        <div class="weather-icon">${getWeatherIcon(weatherDesc, isDay)}</div>
                                         <div class="hourly-temp">${temp}°C</div>
                                         <div>${weatherDesc}</div>
                                         <small>Rain: ${rainChance}%</small><br>
@@ -428,15 +417,14 @@
                                 const date = parseDate(entry);
                                 const time = formatTime(date);
                                 const weatherDesc = entry.weather?.[0]?.description || entry.condition?.text || '--';
-                                const isDay = isDayTime(entry);
                                 const temp = entry.main?.temp || entry.temp_c || '--';
+                                const humidity = entry.main?.humidity || entry.humidity || '--';
                                 const rainChance = Math.round((entry.pop || entry.chance_of_rain || 0) * 100);
                                 const windSpeed = (entry.wind?.speed || entry.wind_speed || (entry.wind_kph ? entry.wind_kph / 3.6 : 0)).toFixed(1) || '--';
                                 
                                 return `
                                     <div class="hourly-card">
                                         <div class="hourly-time">${time}</div>
-                                        <div class="weather-icon">${getWeatherIcon(weatherDesc, isDay)}</div>
                                         <div class="hourly-temp">${temp}°C</div>
                                         <div>${weatherDesc}</div>
                                         <small>Rain: ${rainChance}%</small><br>
