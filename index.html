@@ -129,6 +129,16 @@
     </footer>
 
     <script>
+        // Return weather icon based on description
+        function getWeatherIcon(weather) {
+            if (!weather) return '';
+            weather = weather.toLowerCase();
+            if (weather === 'sunny') return '☀️';
+            if (weather.includes('cloud')) return '☁️';
+            if (weather.includes('rain')) return '🌧️';
+            return '';
+        }
+
         // Parse date from different formats in the JSON
         function parseDate(entry) {
             if (entry.time_epoch) {
