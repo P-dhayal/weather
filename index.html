@@ -353,44 +353,35 @@
         return;
     }
 
-            // Group forecast by day
-    const forecastByDay = {};
-    forecastData.forEach(entry => {
+    // Current date is July 2, 2025
+    const currentDate = new Date('2025-07-02T00:00:00');
+    const nextDay1 = new Date(currentDate);
+    nextDay1.setDate(currentDate.getDate() + 1); // July 3
+    const nextDay2 = new Date(currentDate);
+    nextDay2.setDate(currentDate.getDate() + 2); // July 4
+
+    const day1Str = nextDay1.toISOString().split('T')[0];
+    const day2Str = nextDay2.toISOString().split('T')[0];
+
+    // Filter forecast data for only July 3 and 4
+    const day1Entries = forecastData.filter(entry => {
         const date = parseDate(entry);
-        const dateStr = date.toISOString().split('T')[0];
-        
-        // Skip current day (July 2)
-        if (dateStr === '2025-07-02') return;
-        
-        if (!forecastByDay[dateStr]) {
-            forecastByDay[dateStr] = [];
-        }
-        forecastByDay[dateStr].push(entry);
+        return date.toISOString().split('T')[0] === day1Str;
     });
 
-    // Sort dates and take only next 2 days
-    const sortedDates = Object.keys(forecastByDay).sort();
-    const nextTwoDays = sortedDates.slice(0, 2);
+    const day2Entries = forecastData.filter(entry => {
+        const date = parseDate(entry);
+        return date.toISOString().split('T')[0] === day2Str;
+    });
 
-    // Display each forecast day with ordinal dates
-    nextTwoDays.forEach(dateStr => {
-        const dayEntries = forecastByDay[dateStr];
-        const date = new Date(dateStr);
-        const dayName = date.toLocaleDateString([], { weekday: 'long' });
-        const dayNumber = date.getDate();
-        const month = date.toLocaleDateString([], { month: 'long' });
-        
-        // Get ordinal suffix (st, nd, rd, th)
-        let suffix = 'th';
-        if (dayNumber === 1 || dayNumber === 21 || dayNumber === 31) suffix = 'st';
-        else if (dayNumber === 2 || dayNumber === 22) suffix = 'nd';
-        else if (dayNumber === 3 || dayNumber === 23) suffix = 'rd';
-        
+    // Display July 3
+    if (day1Entries.length > 0) {
+        const dayName = nextDay1.toLocaleDateString([], { weekday: 'long' });
         container.innerHTML += `
             <div class="mb-4">
-                <h4>${dayName}, ${dayNumber}${suffix} ${month}</h4>
+                <h4>${dayName}, 3rd July</h4>
                 <div class="hourly-weather">
-                    ${dayEntries.map(entry => {
+                    ${day1Entries.map(entry => {
                         const time = formatTime(parseDate(entry));
                         const weatherDesc = entry.weather?.[0]?.description || '--';
                         const temp = entry.main?.temp || '--';
@@ -411,7 +402,37 @@
                 </div>
             </div>
         `;
-    });
+    }
+
+    // Display July 4
+    if (day2Entries.length > 0) {
+        const dayName = nextDay2.toLocaleDateString([], { weekday: 'long' });
+        container.innerHTML += `
+            <div class="mb-4">
+                <h4>${dayName}, 4th July</h4>
+                <div class="hourly-weather">
+                    ${day2Entries.map(entry => {
+                        const time = formatTime(parseDate(entry));
+                        const weatherDesc = entry.weather?.[0]?.description || '--';
+                        const temp = entry.main?.temp || '--';
+                        const rainChance = Math.round((entry.pop || 0) * 100);
+                        const windSpeed = entry.wind?.speed?.toFixed(1) || '--';
+                        
+                        return `
+                            <div class="hourly-card">
+                                <div class="hourly-time">${time}</div>
+                                <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
+                                <div class="hourly-temp">${temp}°C</div>
+                                <div>${weatherDesc}</div>
+                                <small>Rain: ${rainChance}%</small><br>
+                                <small>Wind: ${windSpeed} m/s</small>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
 }
 
         function createCharts(labels, tempData, humidityData, windData) {
