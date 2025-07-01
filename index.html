@@ -43,7 +43,6 @@
                             <p><strong>Rain Chance:</strong> <span id="current-rain">--%</span></p>
                             <p><strong>Wind Speed:</strong> <span id="current-wind">-- m/s</span></p>
                             <p><strong>Feels Like:</strong> <span id="current-feelslike">--°C</span></p>
-                            <p><strong>UV Index:</strong> <span id="current-uv">--</span></p>
                         </div>
                     </div>
                 </div>
@@ -162,24 +161,28 @@
             return '🌤️';
         }
 
+        // Parse date from different formats in the JSON
+        function parseDate(entry) {
+            if (entry.time_epoch) {
+                return new Date(entry.time_epoch * 1000);
+            } else if (entry.time) {
+                return new Date(entry.time);
+            }
+            return new Date();
+        }
+
         // Format time display
-        function formatTime(dateTimeStr) {
-            if (!dateTimeStr) return '--:-- --';
-            const date = new Date(dateTimeStr.includes(' ') ? dateTimeStr : dateTimeStr + 'Z');
+        function formatTime(date) {
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
         // Format date display
-        function formatDate(dateTimeStr) {
-            if (!dateTimeStr) return '--/--/----';
-            const date = new Date(dateTimeStr.includes(' ') ? dateTimeStr : dateTimeStr + 'Z');
+        function formatDate(date) {
             return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
         }
 
         // Format date for table headers
-        function formatTableDate(dateTimeStr) {
-            if (!dateTimeStr) return '--/-- --:--';
-            const date = new Date(dateTimeStr.includes(' ') ? dateTimeStr : dateTimeStr + 'Z');
+        function formatTableDate(date) {
             return date.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
@@ -193,25 +196,20 @@
                     throw new Error('Invalid weather data format');
                 }
 
-                // Find current date (most recent entry)
-                const currentEntry = weatherData.reduce((latest, entry) => {
-                    const entryTime = entry.time_epoch ? entry.time_epoch * 1000 : new Date(entry.time).getTime();
-                    const latestTime = latest.time_epoch ? latest.time_epoch * 1000 : new Date(latest.time).getTime();
-                    return entryTime > latestTime ? entry : latest;
-                });
+                // Parse all dates and sort the data
+                const processedData = weatherData.map(entry => ({
+                    ...entry,
+                    date: parseDate(entry)
+                })).sort((a, b) => a.date - b.date);
 
-                const currentDate = currentEntry.time_epoch ? 
-                    new Date(currentEntry.time_epoch * 1000) : 
-                    new Date(currentEntry.time);
-
+                // Find current date (July 2, 2025)
+                const currentDate = new Date('2025-07-02T00:00:00');
+                const currentDateStr = currentDate.toISOString().split('T')[0];
+                
                 // Group data by date
                 const groupedData = {};
-                weatherData.forEach(entry => {
-                    const entryTime = entry.time_epoch ? 
-                        new Date(entry.time_epoch * 1000) : 
-                        new Date(entry.time);
-                    const dateStr = entryTime.toISOString().split('T')[0];
-                    
+                processedData.forEach(entry => {
+                    const dateStr = entry.date.toISOString().split('T')[0];
                     if (!groupedData[dateStr]) {
                         groupedData[dateStr] = [];
                     }
@@ -220,12 +218,10 @@
 
                 // Sort dates
                 const sortedDates = Object.keys(groupedData).sort();
-                const currentDateStr = currentDate.toISOString().split('T')[0];
-                
-                // Find current date index
                 const currentIndex = sortedDates.indexOf(currentDateStr);
+                
                 if (currentIndex === -1) {
-                    throw new Error('Current date not found in data');
+                    throw new Error('Current date (July 2, 2025) not found in data');
                 }
 
                 // Get past dates (2 days before current)
@@ -234,18 +230,24 @@
                 // Get forecast dates (2 days after current)
                 const forecastDates = sortedDates.slice(currentIndex + 1, currentIndex + 3);
 
+                // Find current weather entry (noon on current date)
+                const currentEntries = groupedData[currentDateStr] || [];
+                const currentEntry = currentEntries.find(entry => 
+                    entry.date.getHours() === 12
+                ) || currentEntries[currentEntries.length - 1] || {};
+
                 // Update UI headers
                 document.getElementById('date-range').textContent = 
-                    `Past (${pastDates.length ? formatDate(pastDates[0]) : '--'} to ${formatDate(currentDateStr)}), ` +
-                    `Current (${formatDate(currentDateStr)}), ` +
-                    `Forecast (${forecastDates.length ? formatDate(forecastDates[0]) : '--'} to ${forecastDates.length > 1 ? formatDate(forecastDates[1]) : '--'})`;
+                    `Past (${pastDates.length ? formatDate(new Date(pastDates[0])) : '--'} to ${formatDate(new Date(currentDateStr))}), ` +
+                    `Current (${formatDate(new Date(currentDateStr))}), ` +
+                    `Forecast (${forecastDates.length ? formatDate(new Date(forecastDates[0])) : '--'} to ${forecastDates.length > 1 ? formatDate(new Date(forecastDates[1])) : '--'})`;
 
                 document.getElementById('current-date-header').textContent = 
-                    `Current Weather (${formatDate(currentDateStr)})`;
+                    `Current Weather (${formatDate(new Date(currentDateStr))})`;
                 document.getElementById('past-header').textContent = 
-                    `Past Weather (${pastDates.length ? formatDate(pastDates[0]) : '--'} to ${formatDate(currentDateStr)})`;
+                    `Past Weather (${pastDates.length ? formatDate(new Date(pastDates[0])) : '--'} to ${formatDate(new Date(currentDateStr))})`;
                 document.getElementById('forecast-header').textContent = 
-                    `Forecast (${forecastDates.length ? formatDate(forecastDates[0]) : '--'} to ${forecastDates.length > 1 ? formatDate(forecastDates[1]) : '--'})`;
+                    `Forecast (${forecastDates.length ? formatDate(new Date(forecastDates[0])) : '--'} to ${forecastDates.length > 1 ? formatDate(new Date(forecastDates[1])) : '--'})`;
 
                 // Display current weather
                 displayCurrentWeather(currentEntry);
@@ -255,21 +257,16 @@
                 const tempData = [];
                 const humidityData = [];
                 const windData = [];
-                const rainData = [];
 
-                weatherData.forEach(entry => {
-                    const entryTime = entry.time_epoch ? 
-                        new Date(entry.time_epoch * 1000) : 
-                        new Date(entry.time);
-                    chartLabels.push(formatTableDate(entry.time));
+                processedData.forEach(entry => {
+                    chartLabels.push(formatTableDate(entry.date));
                     tempData.push(entry.temp_c);
-                    humidityData.push(entry.humidity || entry.humidity);
+                    humidityData.push(entry.humidity);
                     windData.push(entry.wind_kph ? entry.wind_kph / 3.6 : entry.wind_speed);
-                    rainData.push(entry.chance_of_rain || entry.rain_chance || 0);
                 });
 
                 // Create charts
-                createCharts(chartLabels, tempData, humidityData, windData, rainData);
+                createCharts(chartLabels, tempData, humidityData, windData);
 
                 // Display past weather table
                 displayWeatherTable('past-data', pastDates, groupedData);
@@ -285,14 +282,13 @@
 
         function displayCurrentWeather(entry) {
             document.getElementById('current-icon').textContent = getWeatherIcon(entry.condition?.text || entry.weather);
-            document.getElementById('current-temp').textContent = `${entry.temp_c || entry.temp_c}°C`;
+            document.getElementById('current-temp').textContent = `${entry.temp_c || '--'}°C`;
             document.getElementById('current-weather').textContent = entry.condition?.text || entry.weather || '--';
-            document.getElementById('current-time').textContent = formatTime(entry.time);
-            document.getElementById('current-humidity').textContent = `${entry.humidity || entry.humidity}%`;
-            document.getElementById('current-rain').textContent = `${entry.chance_of_rain || entry.rain_chance || 0}%`;
+            document.getElementById('current-time').textContent = entry.date ? formatTime(entry.date) : '--:-- --';
+            document.getElementById('current-humidity').textContent = `${entry.humidity || '--'}%`;
+            document.getElementById('current-rain').textContent = `${entry.chance_of_rain || entry.rain_chance || '--'}%`;
             document.getElementById('current-wind').textContent = `${entry.wind_kph ? (entry.wind_kph / 3.6).toFixed(1) : entry.wind_speed?.toFixed(1) || '--'} m/s`;
             document.getElementById('current-feelslike').textContent = `${entry.feelslike_c || entry.temp_c || '--'}°C`;
-            document.getElementById('current-uv').textContent = entry.uv || '--';
         }
 
         function displayWeatherTable(tableId, dates, groupedData) {
@@ -306,20 +302,17 @@
 
             dates.forEach(date => {
                 groupedData[date]?.forEach(entry => {
-                    const time = entry.time_epoch ? 
-                        new Date(entry.time_epoch * 1000) : 
-                        new Date(entry.time);
-                    const hour = time.getHours();
+                    const hour = entry.date.getHours();
                     
                     // Only show 6AM, 12PM, 6PM, 12AM
                     if ([0, 6, 12, 18].includes(hour)) {
                         tableBody.innerHTML += `
                             <tr>
-                                <td>${formatTableDate(entry.time)}</td>
+                                <td>${formatTableDate(entry.date)}</td>
                                 <td><span class="weather-icon">${getWeatherIcon(entry.condition?.text || entry.weather)}</span> ${entry.condition?.text || entry.weather || '--'}</td>
-                                <td>${entry.temp_c || entry.temp_c}</td>
-                                <td>${entry.humidity || entry.humidity}</td>
-                                <td>${entry.chance_of_rain || entry.rain_chance || 0}</td>
+                                <td>${entry.temp_c || '--'}</td>
+                                <td>${entry.humidity || '--'}</td>
+                                <td>${entry.chance_of_rain || entry.rain_chance || '--'}</td>
                                 <td>${entry.wind_kph ? (entry.wind_kph / 3.6).toFixed(1) : entry.wind_speed?.toFixed(1) || '--'}</td>
                             </tr>
                         `;
@@ -332,7 +325,7 @@
             }
         }
 
-        function createCharts(labels, tempData, humidityData, windData, rainData) {
+        function createCharts(labels, tempData, humidityData, windData) {
             // Temperature Chart
             new Chart(
                 document.getElementById('tempChart').getContext('2d'),
