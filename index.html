@@ -345,67 +345,74 @@
         }
 
         function displayForecast(forecastData) {
-            const container = document.getElementById('forecast-days');
-            container.innerHTML = '';
+    const container = document.getElementById('forecast-days');
+    container.innerHTML = '';
 
-            if (!forecastData || forecastData.length === 0) {
-                container.innerHTML = '<p>No forecast data available</p>';
-                return;
-            }
+    if (!forecastData || forecastData.length === 0) {
+        container.innerHTML = '<p>No forecast data available</p>';
+        return;
+    }
 
             // Group forecast by day
-            const forecastByDay = {};
-            forecastData.forEach(entry => {
-                const date = parseDate(entry);
-                const dateStr = date.toISOString().split('T')[0];
-                
-                // Skip current day (July 2)
-                if (dateStr === '2025-07-02') return;
-                
-                if (!forecastByDay[dateStr]) {
-                    forecastByDay[dateStr] = [];
-                }
-                forecastByDay[dateStr].push(entry);
-            });
-
-            // Sort dates and take only next 2 days
-            const sortedDates = Object.keys(forecastByDay).sort();
-            const nextTwoDays = sortedDates.slice(0, 2);
-
-            // Display each forecast day
-            nextTwoDays.forEach(dateStr => {
-                const dayEntries = forecastByDay[dateStr];
-                const date = new Date(dateStr);
-                const dayName = date.toLocaleDateString([], { weekday: 'long' });
-                const dateFormatted = formatDate(date);
-                
-                container.innerHTML += `
-                    <div class="mb-4">
-                        <h4>${dayName}, ${dateFormatted}</h4>
-                        <div class="hourly-weather">
-                            ${dayEntries.map(entry => {
-                                const time = formatTime(parseDate(entry));
-                                const weatherDesc = entry.weather?.[0]?.description || '--';
-                                const temp = entry.main?.temp || '--';
-                                const rainChance = Math.round((entry.pop || 0) * 100);
-                                const windSpeed = entry.wind?.speed?.toFixed(1) || '--';
-                                
-                                return `
-                                    <div class="hourly-card">
-                                        <div class="hourly-time">${time}</div>
-                                        <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
-                                        <div class="hourly-temp">${temp}°C</div>
-                                        <div>${weatherDesc}</div>
-                                        <small>Rain: ${rainChance}%</small><br>
-                                        <small>Wind: ${windSpeed} m/s</small>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            });
+    const forecastByDay = {};
+    forecastData.forEach(entry => {
+        const date = parseDate(entry);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        // Skip current day (July 2)
+        if (dateStr === '2025-07-02') return;
+        
+        if (!forecastByDay[dateStr]) {
+            forecastByDay[dateStr] = [];
         }
+        forecastByDay[dateStr].push(entry);
+    });
+
+    // Sort dates and take only next 2 days
+    const sortedDates = Object.keys(forecastByDay).sort();
+    const nextTwoDays = sortedDates.slice(0, 2);
+
+    // Display each forecast day with ordinal dates
+    nextTwoDays.forEach(dateStr => {
+        const dayEntries = forecastByDay[dateStr];
+        const date = new Date(dateStr);
+        const dayName = date.toLocaleDateString([], { weekday: 'long' });
+        const dayNumber = date.getDate();
+        const month = date.toLocaleDateString([], { month: 'long' });
+        
+        // Get ordinal suffix (st, nd, rd, th)
+        let suffix = 'th';
+        if (dayNumber === 1 || dayNumber === 21 || dayNumber === 31) suffix = 'st';
+        else if (dayNumber === 2 || dayNumber === 22) suffix = 'nd';
+        else if (dayNumber === 3 || dayNumber === 23) suffix = 'rd';
+        
+        container.innerHTML += `
+            <div class="mb-4">
+                <h4>${dayName}, ${dayNumber}${suffix} ${month}</h4>
+                <div class="hourly-weather">
+                    ${dayEntries.map(entry => {
+                        const time = formatTime(parseDate(entry));
+                        const weatherDesc = entry.weather?.[0]?.description || '--';
+                        const temp = entry.main?.temp || '--';
+                        const rainChance = Math.round((entry.pop || 0) * 100);
+                        const windSpeed = entry.wind?.speed?.toFixed(1) || '--';
+                        
+                        return `
+                            <div class="hourly-card">
+                                <div class="hourly-time">${time}</div>
+                                <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
+                                <div class="hourly-temp">${temp}°C</div>
+                                <div>${weatherDesc}</div>
+                                <small>Rain: ${rainChance}%</small><br>
+                                <small>Wind: ${windSpeed} m/s</small>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    });
+}
 
         function createCharts(labels, tempData, humidityData, windData) {
             // Temperature Chart
