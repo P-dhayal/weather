@@ -1,0 +1,1239 @@
+{
+    "past_data": [
+        {
+            "time_epoch": 1751221800,
+            "time": "2025-06-30 00:00",
+            "temp_c": 34.9,
+            "temp_f": 94.9,
+            "is_day": 0,
+            "condition": {
+                "text": "Clear",
+                "icon": "//cdn.weatherapi.com/weather/64x64/night/113.png",
+                "code": 1000
+            },
+            "wind_mph": 19.2,
+            "wind_kph": 31.0,
+            "wind_degree": 217,
+            "wind_dir": "SW",
+            "pressure_mb": 994.0,
+            "pressure_in": 29.35,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 49,
+            "cloud": 10,
+            "feelslike_c": 40.5,
+            "feelslike_f": 105.0,
+            "windchill_c": 34.9,
+            "windchill_f": 94.9,
+            "heatindex_c": 40.5,
+            "heatindex_f": 105.0,
+            "dewpoint_c": 22.5,
+            "dewpoint_f": 72.5,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 25.9,
+            "gust_kph": 41.7,
+            "uv": 0.0
+        },
+        {
+            "time_epoch": 1751243400,
+            "time": "2025-06-30 06:00",
+            "temp_c": 32.3,
+            "temp_f": 90.2,
+            "is_day": 1,
+            "condition": {
+                "text": "Sunny",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+                "code": 1000
+            },
+            "wind_mph": 16.6,
+            "wind_kph": 26.6,
+            "wind_degree": 238,
+            "wind_dir": "WSW",
+            "pressure_mb": 995.0,
+            "pressure_in": 29.38,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 57,
+            "cloud": 22,
+            "feelslike_c": 37.3,
+            "feelslike_f": 99.2,
+            "windchill_c": 32.3,
+            "windchill_f": 90.2,
+            "heatindex_c": 37.3,
+            "heatindex_f": 99.2,
+            "dewpoint_c": 22.9,
+            "dewpoint_f": 73.1,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 21.2,
+            "gust_kph": 34.1,
+            "uv": 8.0
+        },
+        {
+            "time_epoch": 1751265000,
+            "time": "2025-06-30 12:00",
+            "temp_c": 38.4,
+            "temp_f": 101.1,
+            "is_day": 1,
+            "condition": {
+                "text": "Partly cloudy",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                "code": 1003
+            },
+            "wind_mph": 11.6,
+            "wind_kph": 18.7,
+            "wind_degree": 217,
+            "wind_dir": "SW",
+            "pressure_mb": 995.0,
+            "pressure_in": 29.4,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 38,
+            "cloud": 32,
+            "feelslike_c": 44.2,
+            "feelslike_f": 111.5,
+            "windchill_c": 38.4,
+            "windchill_f": 101.1,
+            "heatindex_c": 44.2,
+            "heatindex_f": 111.5,
+            "dewpoint_c": 21.5,
+            "dewpoint_f": 70.8,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 13.4,
+            "gust_kph": 21.5,
+            "uv": 9.0
+        },
+        {
+            "time_epoch": 1751286600,
+            "time": "2025-06-30 18:00",
+            "temp_c": 40.1,
+            "temp_f": 104.2,
+            "is_day": 1,
+            "condition": {
+                "text": "Patchy rain possible",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/176.png",
+                "code": 1063
+            },
+            "wind_mph": 11.6,
+            "wind_kph": 18.7,
+            "wind_degree": 195,
+            "wind_dir": "SSW",
+            "pressure_mb": 993.0,
+            "pressure_in": 29.32,
+            "precip_mm": 0.05,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 32,
+            "cloud": 70,
+            "feelslike_c": 44.9,
+            "feelslike_f": 112.8,
+            "windchill_c": 40.1,
+            "windchill_f": 104.2,
+            "heatindex_c": 44.9,
+            "heatindex_f": 112.8,
+            "dewpoint_c": 20.1,
+            "dewpoint_f": 68.2,
+            "will_it_rain": 0,
+            "chance_of_rain": 45,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 13.4,
+            "gust_kph": 21.5,
+            "uv": 9.0
+        },
+        {
+            "time_epoch": 1751308200,
+            "time": "2025-07-01 00:00",
+            "temp_c": 35.7,
+            "temp_f": 96.3,
+            "is_day": 0,
+            "condition": {
+                "text": "Clear",
+                "icon": "//cdn.weatherapi.com/weather/64x64/night/113.png",
+                "code": 1000
+            },
+            "wind_mph": 17.0,
+            "wind_kph": 27.4,
+            "wind_degree": 210,
+            "wind_dir": "SSW",
+            "pressure_mb": 995.0,
+            "pressure_in": 29.37,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 44,
+            "cloud": 15,
+            "feelslike_c": 40.8,
+            "feelslike_f": 105.4,
+            "windchill_c": 35.7,
+            "windchill_f": 96.3,
+            "heatindex_c": 40.8,
+            "heatindex_f": 105.4,
+            "dewpoint_c": 21.6,
+            "dewpoint_f": 70.9,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 22.7,
+            "gust_kph": 36.5,
+            "uv": 0.0
+        },
+        {
+            "time_epoch": 1751329800,
+            "time": "2025-07-01 06:00",
+            "temp_c": 33.2,
+            "temp_f": 91.7,
+            "is_day": 1,
+            "condition": {
+                "text": "Sunny",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+                "code": 1000
+            },
+            "wind_mph": 14.5,
+            "wind_kph": 23.4,
+            "wind_degree": 226,
+            "wind_dir": "SW",
+            "pressure_mb": 996.0,
+            "pressure_in": 29.42,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 56,
+            "cloud": 15,
+            "feelslike_c": 38.8,
+            "feelslike_f": 101.8,
+            "windchill_c": 33.2,
+            "windchill_f": 91.7,
+            "heatindex_c": 38.8,
+            "heatindex_f": 101.8,
+            "dewpoint_c": 23.1,
+            "dewpoint_f": 73.6,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 18.8,
+            "gust_kph": 30.2,
+            "uv": 8.0
+        },
+        {
+            "time_epoch": 1751351400,
+            "time": "2025-07-01 12:00",
+            "temp_c": 36.6,
+            "temp_f": 97.8,
+            "is_day": 1,
+            "condition": {
+                "text": "Partly cloudy",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                "code": 1003
+            },
+            "wind_mph": 9.4,
+            "wind_kph": 15.1,
+            "wind_degree": 167,
+            "wind_dir": "SSE",
+            "pressure_mb": 997.0,
+            "pressure_in": 29.45,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 44,
+            "cloud": 34,
+            "feelslike_c": 42.4,
+            "feelslike_f": 108.4,
+            "windchill_c": 36.6,
+            "windchill_f": 97.8,
+            "heatindex_c": 42.4,
+            "heatindex_f": 108.4,
+            "dewpoint_c": 22.2,
+            "dewpoint_f": 71.9,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 10.8,
+            "gust_kph": 17.4,
+            "uv": 9.0
+        },
+        {
+            "time_epoch": 1751373000,
+            "time": "2025-07-01 18:00",
+            "temp_c": 36.5,
+            "temp_f": 97.7,
+            "is_day": 1,
+            "condition": {
+                "text": "Sunny",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+                "code": 1000
+            },
+            "wind_mph": 11.6,
+            "wind_kph": 18.7,
+            "wind_degree": 155,
+            "wind_dir": "SSE",
+            "pressure_mb": 996.0,
+            "pressure_in": 29.4,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 43,
+            "cloud": 20,
+            "feelslike_c": 42.1,
+            "feelslike_f": 107.8,
+            "windchill_c": 36.5,
+            "windchill_f": 97.7,
+            "heatindex_c": 42.1,
+            "heatindex_f": 107.8,
+            "dewpoint_c": 22.0,
+            "dewpoint_f": 71.5,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 14.0,
+            "gust_kph": 22.6,
+            "uv": 9.0
+        }
+    ],
+    "current_data": [
+        {
+            "time_epoch": 1751394600,
+            "time": "2025-07-02 00:00",
+            "temp_c": 33.3,
+            "temp_f": 91.9,
+            "is_day": 0,
+            "condition": {
+                "text": "Patchy rain possible",
+                "icon": "//cdn.weatherapi.com/weather/64x64/night/176.png",
+                "code": 1063
+            },
+            "wind_mph": 6.9,
+            "wind_kph": 11.2,
+            "wind_degree": 132,
+            "wind_dir": "SE",
+            "pressure_mb": 997.0,
+            "pressure_in": 29.43,
+            "precip_mm": 0.55,
+            "precip_in": 0.02,
+            "snow_cm": 0.0,
+            "humidity": 50,
+            "cloud": 74,
+            "feelslike_c": 37.5,
+            "feelslike_f": 99.5,
+            "windchill_c": 33.3,
+            "windchill_f": 91.9,
+            "heatindex_c": 37.5,
+            "heatindex_f": 99.5,
+            "dewpoint_c": 21.6,
+            "dewpoint_f": 70.8,
+            "will_it_rain": 1,
+            "chance_of_rain": 100,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 9.0,
+            "vis_miles": 5.0,
+            "gust_mph": 10.1,
+            "gust_kph": 16.3,
+            "uv": 0.0
+        },
+        {
+            "time_epoch": 1751405400,
+            "time": "2025-07-02 03:00",
+            "temp_c": 30.6,
+            "temp_f": 87.0,
+            "is_day": 0,
+            "condition": {
+                "text": "Patchy rain possible",
+                "icon": "//cdn.weatherapi.com/weather/64x64/night/176.png",
+                "code": 1063
+            },
+            "wind_mph": 7.6,
+            "wind_kph": 12.2,
+            "wind_degree": 114,
+            "wind_dir": "ESE",
+            "pressure_mb": 997.0,
+            "pressure_in": 29.44,
+            "precip_mm": 0.89,
+            "precip_in": 0.03,
+            "snow_cm": 0.0,
+            "humidity": 60,
+            "cloud": 89,
+            "feelslike_c": 34.2,
+            "feelslike_f": 93.6,
+            "windchill_c": 30.6,
+            "windchill_f": 87.0,
+            "heatindex_c": 34.2,
+            "heatindex_f": 93.6,
+            "dewpoint_c": 22.0,
+            "dewpoint_f": 71.5,
+            "will_it_rain": 1,
+            "chance_of_rain": 100,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 9.0,
+            "vis_miles": 5.0,
+            "gust_mph": 13.0,
+            "gust_kph": 20.9,
+            "uv": 0.0
+        },
+        {
+            "time_epoch": 1751416200,
+            "time": "2025-07-02 06:00",
+            "temp_c": 31.6,
+            "temp_f": 88.8,
+            "is_day": 1,
+            "condition": {
+                "text": "Patchy rain possible",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/176.png",
+                "code": 1063
+            },
+            "wind_mph": 3.4,
+            "wind_kph": 5.4,
+            "wind_degree": 43,
+            "wind_dir": "NE",
+            "pressure_mb": 997.0,
+            "pressure_in": 29.45,
+            "precip_mm": 0.05,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 55,
+            "cloud": 80,
+            "feelslike_c": 35.1,
+            "feelslike_f": 95.2,
+            "windchill_c": 31.6,
+            "windchill_f": 88.8,
+            "heatindex_c": 35.1,
+            "heatindex_f": 95.2,
+            "dewpoint_c": 21.4,
+            "dewpoint_f": 70.4,
+            "will_it_rain": 0,
+            "chance_of_rain": 45,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 4.9,
+            "gust_kph": 7.8,
+            "uv": 7.0
+        },
+        {
+            "time_epoch": 1751427000,
+            "time": "2025-07-02 09:00",
+            "temp_c": 34.9,
+            "temp_f": 94.7,
+            "is_day": 1,
+            "condition": {
+                "text": "Sunny",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+                "code": 1000
+            },
+            "wind_mph": 4.5,
+            "wind_kph": 7.2,
+            "wind_degree": 94,
+            "wind_dir": "E",
+            "pressure_mb": 998.0,
+            "pressure_in": 29.48,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 44,
+            "cloud": 17,
+            "feelslike_c": 38.8,
+            "feelslike_f": 101.9,
+            "windchill_c": 34.9,
+            "windchill_f": 94.7,
+            "heatindex_c": 38.8,
+            "heatindex_f": 101.9,
+            "dewpoint_c": 20.7,
+            "dewpoint_f": 69.2,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 5.4,
+            "gust_kph": 8.6,
+            "uv": 8.0
+        },
+        {
+            "time_epoch": 1751437800,
+            "time": "2025-07-02 12:00",
+            "temp_c": 38.1,
+            "temp_f": 100.6,
+            "is_day": 1,
+            "condition": {
+                "text": "Sunny",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+                "code": 1000
+            },
+            "wind_mph": 4.7,
+            "wind_kph": 7.6,
+            "wind_degree": 104,
+            "wind_dir": "ESE",
+            "pressure_mb": 997.0,
+            "pressure_in": 29.45,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 36,
+            "cloud": 23,
+            "feelslike_c": 42.9,
+            "feelslike_f": 109.2,
+            "windchill_c": 38.1,
+            "windchill_f": 100.6,
+            "heatindex_c": 42.9,
+            "heatindex_f": 109.2,
+            "dewpoint_c": 20.6,
+            "dewpoint_f": 69.0,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 5.4,
+            "gust_kph": 8.7,
+            "uv": 9.0
+        },
+        {
+            "time_epoch": 1751448600,
+            "time": "2025-07-02 15:00",
+            "temp_c": 40.4,
+            "temp_f": 104.7,
+            "is_day": 1,
+            "condition": {
+                "text": "Patchy rain possible",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/176.png",
+                "code": 1063
+            },
+            "wind_mph": 4.9,
+            "wind_kph": 7.9,
+            "wind_degree": 108,
+            "wind_dir": "ESE",
+            "pressure_mb": 995.0,
+            "pressure_in": 29.38,
+            "precip_mm": 0.02,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 32,
+            "cloud": 84,
+            "feelslike_c": 45.4,
+            "feelslike_f": 113.8,
+            "windchill_c": 40.4,
+            "windchill_f": 104.7,
+            "heatindex_c": 45.4,
+            "heatindex_f": 113.8,
+            "dewpoint_c": 20.3,
+            "dewpoint_f": 68.5,
+            "will_it_rain": 0,
+            "chance_of_rain": 45,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 5.7,
+            "gust_kph": 9.1,
+            "uv": 9.0
+        },
+        {
+            "time_epoch": 1751459400,
+            "time": "2025-07-02 18:00",
+            "temp_c": 39.2,
+            "temp_f": 102.6,
+            "is_day": 1,
+            "condition": {
+                "text": "Partly cloudy",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                "code": 1003
+            },
+            "wind_mph": 6.7,
+            "wind_kph": 10.8,
+            "wind_degree": 91,
+            "wind_dir": "E",
+            "pressure_mb": 995.0,
+            "pressure_in": 29.37,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 33,
+            "cloud": 44,
+            "feelslike_c": 43.8,
+            "feelslike_f": 110.9,
+            "windchill_c": 39.2,
+            "windchill_f": 102.6,
+            "heatindex_c": 43.8,
+            "heatindex_f": 110.9,
+            "dewpoint_c": 20.1,
+            "dewpoint_f": 68.1,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 8.6,
+            "gust_kph": 13.9,
+            "uv": 9.0
+        },
+        {
+            "time_epoch": 1751470200,
+            "time": "2025-07-02 21:00",
+            "temp_c": 37.7,
+            "temp_f": 99.9,
+            "is_day": 0,
+            "condition": {
+                "text": "Clear",
+                "icon": "//cdn.weatherapi.com/weather/64x64/night/113.png",
+                "code": 1000
+            },
+            "wind_mph": 15.7,
+            "wind_kph": 25.2,
+            "wind_degree": 172,
+            "wind_dir": "S",
+            "pressure_mb": 996.0,
+            "pressure_in": 29.42,
+            "precip_mm": 0.0,
+            "precip_in": 0.0,
+            "snow_cm": 0.0,
+            "humidity": 40,
+            "cloud": 21,
+            "feelslike_c": 43.4,
+            "feelslike_f": 110.2,
+            "windchill_c": 37.7,
+            "windchill_f": 99.9,
+            "heatindex_c": 43.4,
+            "heatindex_f": 110.2,
+            "dewpoint_c": 21.7,
+            "dewpoint_f": 71.1,
+            "will_it_rain": 0,
+            "chance_of_rain": 0,
+            "will_it_snow": 0,
+            "chance_of_snow": 0,
+            "vis_km": 10.0,
+            "vis_miles": 6.0,
+            "gust_mph": 20.1,
+            "gust_kph": 32.4,
+            "uv": 0.0
+        }
+    ],
+    "forecast_data": [
+        {
+            "dt": 1751500800,
+            "main": {
+                "temp": 33.2,
+                "feels_like": 36.7,
+                "temp_min": 33.2,
+                "temp_max": 33.2,
+                "pressure": 997,
+                "sea_level": 997,
+                "grnd_level": 979,
+                "humidity": 50,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 500,
+                    "main": "Rain",
+                    "description": "light rain",
+                    "icon": "10n"
+                }
+            ],
+            "clouds": {
+                "all": 14
+            },
+            "wind": {
+                "speed": 5.53,
+                "deg": 232,
+                "gust": 7.71
+            },
+            "visibility": 10000,
+            "pop": 0.22,
+            "rain": {
+                "3h": 0.15
+            },
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-03 00:00:00"
+        },
+        {
+            "dt": 1751511600,
+            "main": {
+                "temp": 34.61,
+                "feels_like": 38.69,
+                "temp_min": 34.61,
+                "temp_max": 34.61,
+                "pressure": 999,
+                "sea_level": 999,
+                "grnd_level": 981,
+                "humidity": 47,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 500,
+                    "main": "Rain",
+                    "description": "light rain",
+                    "icon": "10d"
+                }
+            ],
+            "clouds": {
+                "all": 81
+            },
+            "wind": {
+                "speed": 4.61,
+                "deg": 238,
+                "gust": 4.42
+            },
+            "visibility": 10000,
+            "pop": 0.76,
+            "rain": {
+                "3h": 0.6
+            },
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-03 03:00:00"
+        },
+        {
+            "dt": 1751522400,
+            "main": {
+                "temp": 38.34,
+                "feels_like": 42.83,
+                "temp_min": 38.34,
+                "temp_max": 38.34,
+                "pressure": 998,
+                "sea_level": 998,
+                "grnd_level": 981,
+                "humidity": 37,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 803,
+                    "main": "Clouds",
+                    "description": "broken clouds",
+                    "icon": "04d"
+                }
+            ],
+            "clouds": {
+                "all": 52
+            },
+            "wind": {
+                "speed": 2.1,
+                "deg": 241,
+                "gust": 1.31
+            },
+            "visibility": 10000,
+            "pop": 0.34,
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-03 06:00:00"
+        },
+        {
+            "dt": 1751533200,
+            "main": {
+                "temp": 41.46,
+                "feels_like": 45.56,
+                "temp_min": 41.46,
+                "temp_max": 41.46,
+                "pressure": 996,
+                "sea_level": 996,
+                "grnd_level": 978,
+                "humidity": 29,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 801,
+                    "main": "Clouds",
+                    "description": "few clouds",
+                    "icon": "02d"
+                }
+            ],
+            "clouds": {
+                "all": 11
+            },
+            "wind": {
+                "speed": 2.65,
+                "deg": 213,
+                "gust": 2.65
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-03 09:00:00"
+        },
+        {
+            "dt": 1751544000,
+            "main": {
+                "temp": 41.08,
+                "feels_like": 44.79,
+                "temp_min": 41.08,
+                "temp_max": 41.08,
+                "pressure": 994,
+                "sea_level": 994,
+                "grnd_level": 977,
+                "humidity": 29,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 500,
+                    "main": "Rain",
+                    "description": "light rain",
+                    "icon": "10d"
+                }
+            ],
+            "clouds": {
+                "all": 56
+            },
+            "wind": {
+                "speed": 3.38,
+                "deg": 294,
+                "gust": 1.5
+            },
+            "visibility": 10000,
+            "pop": 0.2,
+            "rain": {
+                "3h": 0.33
+            },
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-03 12:00:00"
+        },
+        {
+            "dt": 1751554800,
+            "main": {
+                "temp": 39.13,
+                "feels_like": 42.73,
+                "temp_min": 39.13,
+                "temp_max": 39.13,
+                "pressure": 995,
+                "sea_level": 995,
+                "grnd_level": 978,
+                "humidity": 33,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 801,
+                    "main": "Clouds",
+                    "description": "few clouds",
+                    "icon": "02n"
+                }
+            ],
+            "clouds": {
+                "all": 22
+            },
+            "wind": {
+                "speed": 5.85,
+                "deg": 125,
+                "gust": 5.6
+            },
+            "visibility": 10000,
+            "pop": 0.09,
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-03 15:00:00"
+        },
+        {
+            "dt": 1751565600,
+            "main": {
+                "temp": 37.9,
+                "feels_like": 42.32,
+                "temp_min": 37.9,
+                "temp_max": 37.9,
+                "pressure": 996,
+                "sea_level": 996,
+                "grnd_level": 979,
+                "humidity": 38,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 802,
+                    "main": "Clouds",
+                    "description": "scattered clouds",
+                    "icon": "03n"
+                }
+            ],
+            "clouds": {
+                "all": 27
+            },
+            "wind": {
+                "speed": 7.15,
+                "deg": 206,
+                "gust": 8.3
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-03 18:00:00"
+        },
+        {
+            "dt": 1751576400,
+            "main": {
+                "temp": 36.63,
+                "feels_like": 40.82,
+                "temp_min": 36.63,
+                "temp_max": 36.63,
+                "pressure": 996,
+                "sea_level": 996,
+                "grnd_level": 978,
+                "humidity": 41,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 803,
+                    "main": "Clouds",
+                    "description": "broken clouds",
+                    "icon": "04n"
+                }
+            ],
+            "clouds": {
+                "all": 70
+            },
+            "wind": {
+                "speed": 8.42,
+                "deg": 226,
+                "gust": 10.11
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-03 21:00:00"
+        },
+        {
+            "dt": 1751587200,
+            "main": {
+                "temp": 34.26,
+                "feels_like": 38.62,
+                "temp_min": 34.26,
+                "temp_max": 34.26,
+                "pressure": 996,
+                "sea_level": 996,
+                "grnd_level": 979,
+                "humidity": 49,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 500,
+                    "main": "Rain",
+                    "description": "light rain",
+                    "icon": "10n"
+                }
+            ],
+            "clouds": {
+                "all": 35
+            },
+            "wind": {
+                "speed": 7.34,
+                "deg": 233,
+                "gust": 10.14
+            },
+            "visibility": 10000,
+            "pop": 0.61,
+            "rain": {
+                "3h": 0.67
+            },
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-04 00:00:00"
+        },
+        {
+            "dt": 1751598000,
+            "main": {
+                "temp": 34.72,
+                "feels_like": 39.65,
+                "temp_min": 34.72,
+                "temp_max": 34.72,
+                "pressure": 998,
+                "sea_level": 998,
+                "grnd_level": 980,
+                "humidity": 49,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 800,
+                    "main": "Clear",
+                    "description": "clear sky",
+                    "icon": "01d"
+                }
+            ],
+            "clouds": {
+                "all": 4
+            },
+            "wind": {
+                "speed": 8.73,
+                "deg": 237,
+                "gust": 9.37
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-04 03:00:00"
+        },
+        {
+            "dt": 1751608800,
+            "main": {
+                "temp": 39.21,
+                "feels_like": 44.27,
+                "temp_min": 39.21,
+                "temp_max": 39.21,
+                "pressure": 997,
+                "sea_level": 997,
+                "grnd_level": 980,
+                "humidity": 36,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 801,
+                    "main": "Clouds",
+                    "description": "few clouds",
+                    "icon": "02d"
+                }
+            ],
+            "clouds": {
+                "all": 15
+            },
+            "wind": {
+                "speed": 7.8,
+                "deg": 235,
+                "gust": 7.54
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-04 06:00:00"
+        },
+        {
+            "dt": 1751619600,
+            "main": {
+                "temp": 42.06,
+                "feels_like": 47.36,
+                "temp_min": 42.06,
+                "temp_max": 42.06,
+                "pressure": 994,
+                "sea_level": 994,
+                "grnd_level": 977,
+                "humidity": 30,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 802,
+                    "main": "Clouds",
+                    "description": "scattered clouds",
+                    "icon": "03d"
+                }
+            ],
+            "clouds": {
+                "all": 29
+            },
+            "wind": {
+                "speed": 6.74,
+                "deg": 232,
+                "gust": 5.24
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-04 09:00:00"
+        },
+        {
+            "dt": 1751630400,
+            "main": {
+                "temp": 41.11,
+                "feels_like": 45.36,
+                "temp_min": 41.11,
+                "temp_max": 41.11,
+                "pressure": 993,
+                "sea_level": 993,
+                "grnd_level": 976,
+                "humidity": 30,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 802,
+                    "main": "Clouds",
+                    "description": "scattered clouds",
+                    "icon": "03d"
+                }
+            ],
+            "clouds": {
+                "all": 40
+            },
+            "wind": {
+                "speed": 5.68,
+                "deg": 255,
+                "gust": 5.47
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "d"
+            },
+            "dt_txt": "2025-07-04 12:00:00"
+        },
+        {
+            "dt": 1751641200,
+            "main": {
+                "temp": 40.1,
+                "feels_like": 44.26,
+                "temp_min": 40.1,
+                "temp_max": 40.1,
+                "pressure": 993,
+                "sea_level": 993,
+                "grnd_level": 976,
+                "humidity": 32,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 500,
+                    "main": "Rain",
+                    "description": "light rain",
+                    "icon": "10n"
+                }
+            ],
+            "clouds": {
+                "all": 77
+            },
+            "wind": {
+                "speed": 7.31,
+                "deg": 215,
+                "gust": 7.93
+            },
+            "visibility": 10000,
+            "pop": 0.3,
+            "rain": {
+                "3h": 0.33
+            },
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-04 15:00:00"
+        },
+        {
+            "dt": 1751652000,
+            "main": {
+                "temp": 38.19,
+                "feels_like": 42.08,
+                "temp_min": 38.19,
+                "temp_max": 38.19,
+                "pressure": 995,
+                "sea_level": 995,
+                "grnd_level": 978,
+                "humidity": 36,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 803,
+                    "main": "Clouds",
+                    "description": "broken clouds",
+                    "icon": "04n"
+                }
+            ],
+            "clouds": {
+                "all": 52
+            },
+            "wind": {
+                "speed": 8.7,
+                "deg": 221,
+                "gust": 9.9
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-04 18:00:00"
+        },
+        {
+            "dt": 1751662800,
+            "main": {
+                "temp": 36.08,
+                "feels_like": 39.3,
+                "temp_min": 36.08,
+                "temp_max": 36.08,
+                "pressure": 994,
+                "sea_level": 994,
+                "grnd_level": 977,
+                "humidity": 40,
+                "temp_kf": 0
+            },
+            "weather": [
+                {
+                    "id": 804,
+                    "main": "Clouds",
+                    "description": "overcast clouds",
+                    "icon": "04n"
+                }
+            ],
+            "clouds": {
+                "all": 89
+            },
+            "wind": {
+                "speed": 9.43,
+                "deg": 233,
+                "gust": 11.83
+            },
+            "visibility": 10000,
+            "pop": 0,
+            "sys": {
+                "pod": "n"
+            },
+            "dt_txt": "2025-07-04 21:00:00"
+        }
+    ]
+}
