@@ -136,9 +136,10 @@
             lat: 29.1911,
             lon: 73.2086,
             daysToShow: {
-                past: 2,
-                future: 2
-            }
+                past: 3,  // Show 3 days of historical data
+                future: 2 // Show 2 days of forecast
+            },
+            selectedHours: [0, 6, 12, 18] // Show data for 00:00, 06:00, 12:00, 18:00
         };
 
         // Date utilities
@@ -148,6 +149,11 @@
 
         function formatTime(date) {
             return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        function formatDateTimeString(dateStr) {
+            const date = new Date(dateStr);
+            return formatTime(date);
         }
 
         function getDateRange() {
@@ -185,9 +191,11 @@
                 const data = await response.json();
                 
                 if (!data.error) {
-                    // Get 4 time points per day (00:00, 06:00, 12:00, 18:00)
-                    const hours = data.forecast.forecastday[0].hour;
-                    return hours.filter((_, index) => index % 6 === 0);
+                    // Filter for selected hours (00:00, 06:00, 12:00, 18:00)
+                    return data.forecast.forecastday[0].hour.filter(hour => {
+                        const hourNum = parseInt(hour.time.split(' ')[1].split(':')[0]);
+                        return config.selectedHours.includes(hourNum);
+                    });
                 } else {
                     console.error(`Historical error for ${dateStr}: ${data.error.message}`);
                     return generateMockHistoricalData(date);
@@ -200,40 +208,17 @@
 
         function generateMockHistoricalData(date) {
             const dateStr = formatDate(date);
-            return [
-                { 
-                    time: `${dateStr} 00:00`, 
-                    temp_c: Math.round(25 + Math.random() * 5), 
+            return config.selectedHours.map(hour => {
+                const time = `${hour.toString().padStart(2, '0')}:00`;
+                return { 
+                    time: `${dateStr} ${time}`, 
+                    temp_c: Math.round(25 + Math.random() * 5 - (config.daysToShow.past * 2)), 
                     humidity: Math.round(70 + Math.random() * 20), 
                     condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
                     chance_of_rain: Math.round(Math.random() * 30), 
                     wind_kph: (5 + Math.random() * 10).toFixed(1) 
-                },
-                { 
-                    time: `${dateStr} 06:00`, 
-                    temp_c: Math.round(24 + Math.random() * 4), 
-                    humidity: Math.round(75 + Math.random() * 15), 
-                    condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
-                    chance_of_rain: Math.round(Math.random() * 20), 
-                    wind_kph: (4 + Math.random() * 8).toFixed(1) 
-                },
-                { 
-                    time: `${dateStr} 12:00`, 
-                    temp_c: Math.round(28 + Math.random() * 7), 
-                    humidity: Math.round(60 + Math.random() * 20), 
-                    condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
-                    chance_of_rain: Math.round(Math.random() * 10), 
-                    wind_kph: (6 + Math.random() * 12).toFixed(1) 
-                },
-                { 
-                    time: `${dateStr} 18:00`, 
-                    temp_c: Math.round(26 + Math.random() * 6), 
-                    humidity: Math.round(65 + Math.random() * 20), 
-                    condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
-                    chance_of_rain: Math.round(Math.random() * 15), 
-                    wind_kph: (5 + Math.random() * 10).toFixed(1) 
-                }
-            ];
+                };
+            });
         }
 
         async function getCurrentWeather() {
@@ -284,7 +269,7 @@
                 const data = await response.json();
                 
                 if (data.cod === "200") {
-                    // Get 4 time points per day (00:00, 06:00, 12:00, 18:00)
+                    // Filter for selected hours (00:00, 06:00, 12:00, 18:00) for next 2 days
                     const forecast = [];
                     const targetTimes = ["00:00:00", "06:00:00", "12:00:00", "18:00:00"];
                     
@@ -303,7 +288,7 @@
                         }
                     });
                     
-                    return forecast;
+                    return forecast.slice(0, 8); // 4 time points per day for 2 days
                 } else {
                     console.error(`Forecast error: ${data.message}`);
                     return generateMockForecastData();
@@ -322,7 +307,8 @@
                 const date = new Date(now);
                 date.setDate(now.getDate() + day);
                 
-                for (const time of ["00:00", "06:00", "12:00", "18:00"]) {
+                for (const hour of config.selectedHours) {
+                    const time = `${hour.toString().padStart(2, '0')}:00:00`;
                     forecast.push({
                         time: new Date(`${formatDate(date)} ${time}`),
                         temp: Math.round(25 + Math.random() * 10 - day * 2),
@@ -376,7 +362,7 @@
             data.forEach(hour => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${hour.time.split(' ')[1]}</td>
+                    <td>${formatDateTimeString(hour.time)}</td>
                     <td>${hour.temp_c}</td>
                     <td>${hour.humidity}</td>
                     <td>${hour.condition.text}</td>
@@ -412,24 +398,25 @@
             const humidities = [];
             const winds = [];
             
-            // Add historical data
-            historical.forEach(hour => {
-                labels.push(hour.time.split(' ')[1]);
+            // Add historical data (grouped by day)
+            historical.forEach((hour, index) => {
+                const timeParts = hour.time.split(' ');
+                const displayTime = `${timeParts[0].split('-').slice(1).join('/')} ${timeParts[1].substring(0, 5)}`;
+                labels.push(displayTime);
                 temps.push(hour.temp_c);
                 humidities.push(hour.humidity);
                 winds.push(hour.wind_kph / 3.6);
             });
             
             // Add current weather (middle point)
-            const currentHour = current.time.getHours();
-            labels.push(`${currentHour}:00 (Now)`);
+            labels.push("Now");
             temps.push(current.temp);
             humidities.push(current.humidity);
             winds.push(current.wind);
             
             // Add forecast data
             forecast.forEach(item => {
-                labels.push(formatTime(item.time));
+                labels.push(`${formatDate(item.time).split('-').slice(1).join('/')} ${formatTime(item.time)}`);
                 temps.push(item.temp);
                 humidities.push(item.humidity);
                 winds.push(item.wind);
@@ -454,7 +441,7 @@
                     responsive: true,
                     scales: {
                         x: { 
-                            title: { display: true, text: "Time" },
+                            title: { display: true, text: "Date/Time" },
                             grid: { display: false }
                         },
                         y: { 
@@ -485,7 +472,7 @@
                     responsive: true,
                     scales: {
                         x: { 
-                            title: { display: true, text: "Time" },
+                            title: { display: true, text: "Date/Time" },
                             grid: { display: false }
                         },
                         y: { 
@@ -516,7 +503,7 @@
                     responsive: true,
                     scales: {
                         x: { 
-                            title: { display: true, text: "Time" },
+                            title: { display: true, text: "Date/Time" },
                             grid: { display: false }
                         },
                         y: { 
