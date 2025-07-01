@@ -294,9 +294,12 @@
                     windSpeed = entry.wind.speed.toFixed(1);
                 }
 
+                console.log('Current weather entry:', { time, weatherDesc, temp, humidity: entry.humidity || entry.main?.humidity || '--', rainChance, windSpeed }); // Debug log
+
                 container.innerHTML += `
                     <div class="hourly-card">
                         <div class="hourly-time">${time}</div>
+                        <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
                         <div class="hourly-temp">${temp}°C</div>
                         <div>${weatherDesc || '--'}</div>
                         <small>Rain: ${rainChance || '--'}%</small><br>
@@ -347,10 +350,12 @@
                         windSpeed = entry.wind.speed.toFixed(1);
                     }
 
+                    console.log('Past weather entry:', { time: formatTableDate(date), weatherDesc, temp, humidity, rainChance, windSpeed }); // Debug log
+
                     tableBody.innerHTML += `
                         <tr>
                             <td>${formatTableDate(date)}</td>
-                            <td>${weatherDesc || '--'}</td>
+                            <td><span class="weather-icon">${getWeatherIcon(weatherDesc)}</span> ${weatherDesc || '--'}</td>
                             <td>${temp}</td>
                             <td>${humidity}</td>
                             <td>${rainChance || '--'}</td>
