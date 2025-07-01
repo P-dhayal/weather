@@ -44,9 +44,30 @@
         canvas {
             max-width: 100%;
         }
+        .current-weather {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .current-item {
+            text-align: center;
+            padding: 10px;
+        }
+        .current-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
         @media (max-width: 600px) {
             table, th, td {
                 font-size: 14px;
+            }
+            .current-weather {
+                grid-template-columns: 1fr 1fr;
             }
         }
     </style>
@@ -56,17 +77,12 @@
         <h1>Anupgarh Weather Dashboard</h1>
         <h3 id="date-range">Historical, Current, and Forecast Weather</h3>
 
-        <h2>Current Weather</h2>
-        <div>
-            <p id="current-time">Time: </p>
-            <p id="current-temp">Temperature: </p>
-            <p id="current-humidity">Humidity: </p>
-            <p id="current-weather">Weather: </p>
-            <p id="current-rain">Rain Chance: </p>
-            <p id="current-wind">Wind Speed: </p>
+        <h2 id="current-title">Current Weather</h2>
+        <div class="current-weather" id="current-weather-container">
+            <!-- Current weather will be inserted here by JavaScript -->
         </div>
 
-        <h2>Historical Weather</h2>
+        <h2 id="historical-title">Historical Weather</h2>
         <table id="historical-table">
             <thead>
                 <tr>
@@ -81,7 +97,7 @@
             <tbody id="historical-body"></tbody>
         </table>
 
-        <h2>Forecast (Next 2 Days)</h2>
+        <h2 id="forecast-title">Forecast</h2>
         <table id="forecast-table">
             <thead>
                 <tr>
@@ -113,106 +129,254 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const weatherapiKey = "28dc457030ec4e69bfe131408250107";
-        const owmApiKey = "ac1a9ad688dee52dfd615f7f65f230cf";
-        const lat = 29.1911;
-        const lon = 73.2086;
+        // Configuration
+        const config = {
+            weatherapiKey: "28dc457030ec4e69bfe131408250107",
+            owmApiKey: "ac1a9ad688dee52dfd615f7f65f230cf",
+            lat: 29.1911,
+            lon: 73.2086,
+            daysToShow: {
+                past: 2,
+                future: 2
+            }
+        };
 
+        // Date utilities
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        function getDateRange() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const pastDates = [];
+            for (let i = config.daysToShow.past; i > 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                pastDates.push(date);
+            }
+            
+            const futureDates = [];
+            for (let i = 1; i <= config.daysToShow.future; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                futureDates.push(date);
+            }
+            
+            return {
+                current: today,
+                past: pastDates,
+                future: futureDates
+            };
+        }
+
+        // API functions
         async function getHistoricalData(date) {
-            const url = `http://api.weatherapi.com/v1/history.json?key=${weatherapiKey}&q=${lat},${lon}&dt=${date}`;
+            const dateStr = formatDate(date);
+            const url = `https://api.weatherapi.com/v1/history.json?key=${config.weatherapiKey}&q=${config.lat},${config.lon}&dt=${dateStr}`;
+            
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+                
                 if (!data.error) {
-                    console.log(`Historical data for ${date}:`, data);
-                    // Select 4 time points (00:00, 06:00, 12:00, 18:00)
+                    // Get 4 time points per day (00:00, 06:00, 12:00, 18:00)
                     const hours = data.forecast.forecastday[0].hour;
-                    return hours.filter((_, index) => index % 6 === 0); // Every 6th hour (0, 6, 12, 18)
+                    return hours.filter((_, index) => index % 6 === 0);
                 } else {
-                    console.error(`Historical error for ${date}: ${data.error.message}`);
-                    // Fallback mock data
-                    return [
-                        { time: `${date} 00:00`, temp_c: 28, humidity: 80, condition: { text: "cloudy" }, chance_of_rain: 10, wind_kph: 10.8 },
-                        { time: `${date} 06:00`, temp_c: 27, humidity: 82, condition: { text: "clear" }, chance_of_rain: 0, wind_kph: 7.2 },
-                        { time: `${date} 12:00`, temp_c: 30, humidity: 75, condition: { text: "sunny" }, chance_of_rain: 5, wind_kph: 9.0 },
-                        { time: `${date} 18:00`, temp_c: 29, humidity: 78, condition: { text: "partly cloudy" }, chance_of_rain: 15, wind_kph: 8.0 }
-                    ];
+                    console.error(`Historical error for ${dateStr}: ${data.error.message}`);
+                    return generateMockHistoricalData(date);
                 }
             } catch (e) {
-                console.error(`Historical fetch error for ${date}: ${e}`);
-                // Fallback mock data
-                return [
-                    { time: `${date} 00:00`, temp_c: 28, humidity: 80, condition: { text: "cloudy" }, chance_of_rain: 10, wind_kph: 10.8 },
-                    { time: `${date} 06:00`, temp_c: 27, humidity: 82, condition: { text: "clear" }, chance_of_rain: 0, wind_kph: 7.2 },
-                    { time: `${date} 12:00`, temp_c: 30, humidity: 75, condition: { text: "sunny" }, chance_of_rain: 5, wind_kph: 9.0 },
-                    { time: `${date} 18:00`, temp_c: 29, humidity: 78, condition: { text: "partly cloudy" }, chance_of_rain: 15, wind_kph: 8.0 }
-                ];
+                console.error(`Historical fetch error for ${dateStr}: ${e}`);
+                return generateMockHistoricalData(date);
             }
+        }
+
+        function generateMockHistoricalData(date) {
+            const dateStr = formatDate(date);
+            return [
+                { 
+                    time: `${dateStr} 00:00`, 
+                    temp_c: Math.round(25 + Math.random() * 5), 
+                    humidity: Math.round(70 + Math.random() * 20), 
+                    condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
+                    chance_of_rain: Math.round(Math.random() * 30), 
+                    wind_kph: (5 + Math.random() * 10).toFixed(1) 
+                },
+                { 
+                    time: `${dateStr} 06:00`, 
+                    temp_c: Math.round(24 + Math.random() * 4), 
+                    humidity: Math.round(75 + Math.random() * 15), 
+                    condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
+                    chance_of_rain: Math.round(Math.random() * 20), 
+                    wind_kph: (4 + Math.random() * 8).toFixed(1) 
+                },
+                { 
+                    time: `${dateStr} 12:00`, 
+                    temp_c: Math.round(28 + Math.random() * 7), 
+                    humidity: Math.round(60 + Math.random() * 20), 
+                    condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
+                    chance_of_rain: Math.round(Math.random() * 10), 
+                    wind_kph: (6 + Math.random() * 12).toFixed(1) 
+                },
+                { 
+                    time: `${dateStr} 18:00`, 
+                    temp_c: Math.round(26 + Math.random() * 6), 
+                    humidity: Math.round(65 + Math.random() * 20), 
+                    condition: { text: ["Sunny", "Partly Cloudy", "Cloudy"][Math.floor(Math.random() * 3)] }, 
+                    chance_of_rain: Math.round(Math.random() * 15), 
+                    wind_kph: (5 + Math.random() * 10).toFixed(1) 
+                }
+            ];
         }
 
         async function getCurrentWeather() {
-            const url = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${owmApiKey}&units=metric`;
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${config.lat}&lon=${config.lon}&appid=${config.owmApiKey}&units=metric`;
+            
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+                
                 if (data.cod === 200) {
-                    console.log("Current weather:", data);
-                    return data;
+                    return {
+                        time: new Date(data.dt * 1000),
+                        temp: data.main.temp,
+                        humidity: data.main.humidity,
+                        weather: data.weather[0].description,
+                        rain: data.rain ? data.rain["1h"] || 0 : 0,
+                        wind: data.wind.speed,
+                        icon: data.weather[0].icon
+                    };
                 } else {
                     console.error(`Current weather error: ${data.message}`);
-                    return null;
+                    return generateMockCurrentWeather();
                 }
             } catch (e) {
                 console.error(`Current weather fetch error: ${e}`);
-                return null;
+                return generateMockCurrentWeather();
             }
+        }
+
+        function generateMockCurrentWeather() {
+            const now = new Date();
+            return {
+                time: now,
+                temp: Math.round(25 + Math.random() * 10),
+                humidity: Math.round(60 + Math.random() * 30),
+                weather: ["Sunny", "Partly Cloudy", "Cloudy", "Rainy"][Math.floor(Math.random() * 4)],
+                rain: Math.round(Math.random() * 5),
+                wind: (3 + Math.random() * 8).toFixed(1),
+                icon: "01d"
+            };
         }
 
         async function getForecastData() {
-            const url = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${owmApiKey}&units=metric`;
+            const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${config.lat}&lon=${config.lon}&appid=${config.owmApiKey}&units=metric`;
+            
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+                
                 if (data.cod === "200") {
-                    console.log("Forecast data:", data.list);
-                    // Select 4 time points per day (00:00, 06:00, 12:00, 18:00) for July 2 and 3
+                    // Get 4 time points per day (00:00, 06:00, 12:00, 18:00)
                     const forecast = [];
                     const targetTimes = ["00:00:00", "06:00:00", "12:00:00", "18:00:00"];
-                    const targetDates = ["2025-07-02", "2025-07-03"];
-                    for (const date of targetDates) {
-                        for (const time of targetTimes) {
-                            const target = data.list.find(item => item.dt_txt.includes(date) && item.dt_txt.includes(time));
-                            if (target) forecast.push(target);
+                    
+                    data.list.forEach(item => {
+                        const time = item.dt_txt.split(' ')[1];
+                        if (targetTimes.includes(time)) {
+                            forecast.push({
+                                time: new Date(item.dt * 1000),
+                                temp: item.main.temp,
+                                humidity: item.main.humidity,
+                                weather: item.weather[0].description,
+                                rain: (item.pop * 100).toFixed(0),
+                                wind: item.wind.speed,
+                                icon: item.weather[0].icon
+                            });
                         }
-                    }
-                    return forecast.slice(0, 8); // Ensure max 8 points (4 per day for 2 days)
+                    });
+                    
+                    return forecast;
                 } else {
                     console.error(`Forecast error: ${data.message}`);
-                    return [];
+                    return generateMockForecastData();
                 }
             } catch (e) {
                 console.error(`Forecast fetch error: ${e}`);
-                return [];
+                return generateMockForecastData();
             }
         }
 
+        function generateMockForecastData() {
+            const forecast = [];
+            const now = new Date();
+            
+            for (let day = 1; day <= config.daysToShow.future; day++) {
+                const date = new Date(now);
+                date.setDate(now.getDate() + day);
+                
+                for (const time of ["00:00", "06:00", "12:00", "18:00"]) {
+                    forecast.push({
+                        time: new Date(`${formatDate(date)} ${time}`),
+                        temp: Math.round(25 + Math.random() * 10 - day * 2),
+                        humidity: Math.round(60 + Math.random() * 30 - day * 5),
+                        weather: ["Sunny", "Partly Cloudy", "Cloudy", "Rainy"][Math.floor(Math.random() * 4)],
+                        rain: Math.round(Math.random() * (10 + day * 5)),
+                        wind: (3 + Math.random() * 8 + day).toFixed(1),
+                        icon: `0${Math.floor(Math.random() * 5)}d`
+                    });
+                }
+            }
+            
+            return forecast;
+        }
+
+        // Display functions
         function displayCurrentWeather(data) {
-            if (!data) return;
-            const time = new Date(data.dt * 1000).toLocaleString();
-            document.getElementById("current-time").innerText = `Time: ${time}`;
-            document.getElementById("current-temp").innerText = `Temperature: ${data.main.temp}°C`;
-            document.getElementById("current-humidity").innerText = `Humidity: ${data.main.humidity}%`;
-            document.getElementById("current-weather").innerText = `Weather: ${data.weather[0].description}`;
-            document.getElementById("current-rain").innerText = `Rain Chance: ${data.rain ? data.rain["1h"] || 0 : 0} mm`;
-            document.getElementById("current-wind").innerText = `Wind Speed: ${data.wind.speed} m/s`;
+            const container = document.getElementById('current-weather-container');
+            container.innerHTML = `
+                <div class="current-item">
+                    <div>Time</div>
+                    <div class="current-value">${formatTime(data.time)}</div>
+                </div>
+                <div class="current-item">
+                    <div>Temperature</div>
+                    <div class="current-value">${Math.round(data.temp)}°C</div>
+                </div>
+                <div class="current-item">
+                    <div>Humidity</div>
+                    <div class="current-value">${data.humidity}%</div>
+                </div>
+                <div class="current-item">
+                    <div>Weather</div>
+                    <div class="current-value">${data.weather}</div>
+                </div>
+                <div class="current-item">
+                    <div>Rain Chance</div>
+                    <div class="current-value">${data.rain}%</div>
+                </div>
+                <div class="current-item">
+                    <div>Wind Speed</div>
+                    <div class="current-value">${data.wind} m/s</div>
+                </div>
+            `;
         }
 
         function displayHistoricalData(data) {
             const tbody = document.getElementById("historical-body");
+            tbody.innerHTML = '';
+            
             data.forEach(hour => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${hour.time}</td>
+                    <td>${hour.time.split(' ')[1]}</td>
                     <td>${hour.temp_c}</td>
                     <td>${hour.humidity}</td>
                     <td>${hour.condition.text}</td>
@@ -225,124 +389,188 @@
 
         function displayForecastData(data) {
             const tbody = document.getElementById("forecast-body");
-            data.forEach(forecast => {
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${forecast.dt_txt}</td>
-                    <td>${forecast.main.temp}</td>
-                    <td>${forecast.main.humidity}</td>
-                    <td>${forecast.weather[0].description}</td>
-                    <td>${(forecast.pop * 100).toFixed(0)}</td>
-                    <td>${forecast.wind.speed.toFixed(1)}</td>
+                    <td>${formatTime(item.time)}</td>
+                    <td>${Math.round(item.temp)}</td>
+                    <td>${item.humidity}</td>
+                    <td>${item.weather}</td>
+                    <td>${item.rain}</td>
+                    <td>${item.wind}</td>
                 `;
                 tbody.appendChild(row);
             });
         }
 
-        function createGraphs(historical, forecast) {
-            const times = historical.map(h => h.time).concat(forecast.map(f => f.dt_txt));
-            const temps = historical.map(h => h.temp_c).concat(forecast.map(f => f.main.temp));
-            const humidities = historical.map(h => h.humidity).concat(forecast.map(f => f.main.humidity));
-            const winds = historical.map(h => h.wind_kph / 3.6).concat(forecast.map(f => f.wind.speed));
-
+        function createGraphs(historical, current, forecast) {
+            // Prepare data for charts
+            const labels = [];
+            const temps = [];
+            const humidities = [];
+            const winds = [];
+            
+            // Add historical data
+            historical.forEach(hour => {
+                labels.push(hour.time.split(' ')[1]);
+                temps.push(hour.temp_c);
+                humidities.push(hour.humidity);
+                winds.push(hour.wind_kph / 3.6);
+            });
+            
+            // Add current weather (middle point)
+            const currentHour = current.time.getHours();
+            labels.push(`${currentHour}:00 (Now)`);
+            temps.push(current.temp);
+            humidities.push(current.humidity);
+            winds.push(current.wind);
+            
+            // Add forecast data
+            forecast.forEach(item => {
+                labels.push(formatTime(item.time));
+                temps.push(item.temp);
+                humidities.push(item.humidity);
+                winds.push(item.wind);
+            });
+            
+            // Create temperature chart
             new Chart(document.getElementById("temp-chart"), {
                 type: "line",
                 data: {
-                    labels: times,
+                    labels: labels,
                     datasets: [{
                         label: "Temperature (°C)",
                         data: temps,
                         borderColor: "#4CAF50",
-                        fill: false
+                        backgroundColor: "rgba(76, 175, 80, 0.1)",
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
-                        x: { title: { display: true, text: "Time" } },
-                        y: { title: { display: true, text: "Temperature (°C)" } }
+                        x: { 
+                            title: { display: true, text: "Time" },
+                            grid: { display: false }
+                        },
+                        y: { 
+                            title: { display: true, text: "Temperature (°C)" },
+                            min: Math.min(...temps) - 5,
+                            max: Math.max(...temps) + 5
+                        }
                     }
                 }
             });
-
+            
+            // Create humidity chart
             new Chart(document.getElementById("humidity-chart"), {
                 type: "line",
                 data: {
-                    labels: times,
+                    labels: labels,
                     datasets: [{
                         label: "Humidity (%)",
                         data: humidities,
                         borderColor: "#2196F3",
-                        fill: false
+                        backgroundColor: "rgba(33, 150, 243, 0.1)",
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
-                        x: { title: { display: true, text: "Time" } },
-                        y: { title: { display: true, text: "Humidity (%)" } }
+                        x: { 
+                            title: { display: true, text: "Time" },
+                            grid: { display: false }
+                        },
+                        y: { 
+                            title: { display: true, text: "Humidity (%)" },
+                            min: 0,
+                            max: 100
+                        }
                     }
                 }
             });
-
+            
+            // Create wind chart
             new Chart(document.getElementById("wind-chart"), {
                 type: "line",
                 data: {
-                    labels: times,
+                    labels: labels,
                     datasets: [{
                         label: "Wind Speed (m/s)",
                         data: winds,
                         borderColor: "#FF9800",
-                        fill: false
+                        backgroundColor: "rgba(255, 152, 0, 0.1)",
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
-                        x: { title: { display: true, text: "Time" } },
-                        y: { title: { display: true, text: "Wind Speed (m/s)" } }
+                        x: { 
+                            title: { display: true, text: "Time" },
+                            grid: { display: false }
+                        },
+                        y: { 
+                            title: { display: true, text: "Wind Speed (m/s)" },
+                            min: 0
+                        }
                     }
                 }
             });
         }
 
-        async function init() {
-            const today = new Date();
-            const todayStr = today.toISOString().split("T")[0];
-            const historicalDates = [];
-
-            // Automatically calculate the previous 2 days (e.g., June 29–30, 2025)
-            for (let i = 2; i > 0; i--) {
-                const date = new Date(today);
-                date.setDate(today.getDate() - i);
-                historicalDates.push(date.toISOString().split("T")[0]);
-            }
-
-            // Update date range in HTML
-            const startDate = historicalDates[0];
-            const endDate = "2025-07-03"; // Forecast up to July 3
-            document.getElementById("date-range").innerText = `Historical (${startDate} to ${historicalDates[1]}), Current (${todayStr}), and Forecast (${todayStr} to ${endDate})`;
-            document.getElementsByTagName("h2")[0].innerText = `Current Weather (${todayStr})`;
-            document.getElementsByTagName("h2")[1].innerText = `Historical Weather (${startDate} to ${historicalDates[1]})`;
-            document.getElementsByTagName("h2")[2].innerText = `Forecast (${todayStr} to ${endDate})`;
-
-            // Fetch historical data (4 time points per day)
-            const historical = [];
-            for (const date of historicalDates) {
-                const data = await getHistoricalData(date);
-                historical.push(...data);
-            }
-
-            // Fetch current and forecast data
-            const current = await getCurrentWeather();
-            const forecast = await getForecastData();
-
-            // Display data
-            displayCurrentWeather(current);
-            displayHistoricalData(historical);
-            displayForecastData(forecast);
-
-            // Create graphs
-            createGraphs(historical, forecast);
+        // Update titles with date ranges
+        function updateTitles(dateRange) {
+            const currentDateStr = formatDate(dateRange.current);
+            const pastStartStr = formatDate(dateRange.past[0]);
+            const pastEndStr = formatDate(dateRange.past[dateRange.past.length - 1]);
+            const futureEndStr = formatDate(dateRange.future[dateRange.future.length - 1]);
+            
+            document.getElementById("date-range").innerText = 
+                `Historical (${pastStartStr} to ${pastEndStr}), Current (${currentDateStr}), and Forecast (${currentDateStr} to ${futureEndStr})`;
+            
+            document.getElementById("current-title").innerText = 
+                `Current Weather - ${currentDateStr}`;
+            
+            document.getElementById("historical-title").innerText = 
+                `Historical Weather - ${pastStartStr} to ${pastEndStr}`;
+            
+            document.getElementById("forecast-title").innerText = 
+                `Forecast - ${currentDateStr} to ${futureEndStr}`;
         }
 
+        // Main initialization function
+        async function init() {
+            // Get date range (automatically calculated)
+            const dateRange = getDateRange();
+            updateTitles(dateRange);
+            
+            // Fetch all data
+            const historicalPromises = dateRange.past.map(date => getHistoricalData(date));
+            const historicalData = (await Promise.all(historicalPromises)).flat();
+            
+            const currentWeather = await getCurrentWeather();
+            const forecastData = await getForecastData();
+            
+            // Display data
+            displayCurrentWeather(currentWeather);
+            displayHistoricalData(historicalData);
+            displayForecastData(forecastData);
+            
+            // Create graphs
+            createGraphs(historicalData, currentWeather, forecastData);
+        }
+
+        // Initialize the dashboard
         init();
     </script>
 </body>
