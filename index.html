@@ -15,6 +15,17 @@
         .weather-icon { font-size: 1.5em; vertical-align: middle; }
         .current-weather-icon { font-size: 3em; margin-bottom: 10px; }
         .time-column { white-space: nowrap; }
+        .hourly-weather { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+        .hourly-card { 
+            flex: 1 1 200px; 
+            background: white; 
+            border-radius: 8px; 
+            padding: 15px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .hourly-time { font-weight: bold; margin-bottom: 5px; }
+        .hourly-temp { font-size: 1.2em; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -27,7 +38,7 @@
         <!-- Current Weather Section -->
         <div class="weather-card card mb-4">
             <div class="card-header bg-primary text-white">
-                <h2 class="mb-0" id="current-date-header">Current Weather</h2>
+                <h2 class="mb-0">Current Weather - July 2, 2025</h2>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -45,6 +56,12 @@
                             <p><strong>Feels Like:</strong> <span id="current-feelslike">--°C</span></p>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Hourly weather for current day -->
+                <h4 class="mt-4">Hourly Weather - July 2</h4>
+                <div class="hourly-weather" id="current-hourly">
+                    <!-- Filled by JavaScript -->
                 </div>
             </div>
         </div>
@@ -115,28 +132,14 @@
             </div>
         </div>
 
-        <!-- Forecast Table -->
+        <!-- Forecast Section -->
         <div class="weather-card card mb-4">
             <div class="card-header bg-success text-white">
                 <h2 class="mb-0" id="forecast-header">Forecast</h2>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="time-column">Time</th>
-                                <th>Weather</th>
-                                <th>Temp (°C)</th>
-                                <th>Humidity (%)</th>
-                                <th>Rain (%)</th>
-                                <th>Wind (m/s)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="forecast-data">
-                            <tr><td colspan="6" class="text-center">Loading forecast data...</td></tr>
-                        </tbody>
-                    </table>
+                <div id="forecast-days">
+                    <!-- Filled by JavaScript -->
                 </div>
             </div>
         </div>
@@ -167,6 +170,8 @@
                 return new Date(entry.time_epoch * 1000);
             } else if (entry.time) {
                 return new Date(entry.time);
+            } else if (entry.dt_txt) {
+                return new Date(entry.dt_txt);
             }
             return new Date();
         }
@@ -192,87 +197,64 @@
                 const response = await fetch('weather_data.json');
                 const weatherData = await response.json();
                 
-                if (!weatherData || !Array.isArray(weatherData)) {
-                    throw new Error('Invalid weather data format');
-                }
-
-                // Parse all dates and sort the data
-                const processedData = weatherData.map(entry => ({
-                    ...entry,
-                    date: parseDate(entry)
-                })).sort((a, b) => a.date - b.date);
-
                 // Find current date (July 2, 2025)
                 const currentDate = new Date('2025-07-02T00:00:00');
                 const currentDateStr = currentDate.toISOString().split('T')[0];
                 
-                // Group data by date
-                const groupedData = {};
-                processedData.forEach(entry => {
-                    const dateStr = entry.date.toISOString().split('T')[0];
-                    if (!groupedData[dateStr]) {
-                        groupedData[dateStr] = [];
-                    }
-                    groupedData[dateStr].push(entry);
-                });
-
-                // Sort dates
-                const sortedDates = Object.keys(groupedData).sort();
-                const currentIndex = sortedDates.indexOf(currentDateStr);
+                // Get current day data (8 times per day)
+                const currentDayData = weatherData.current_data || [];
                 
-                if (currentIndex === -1) {
-                    throw new Error('Current date (July 2, 2025) not found in data');
-                }
-
-                // Get past dates (2 days before current)
-                const pastDates = sortedDates.slice(Math.max(0, currentIndex - 2), currentIndex);
+                // Get forecast data (next days)
+                const forecastData = weatherData.forecast_data || [];
                 
-                // Get forecast dates (2 days after current)
-                const forecastDates = sortedDates.slice(currentIndex + 1, currentIndex + 3);
-
-                // Find current weather entry (noon on current date)
-                const currentEntries = groupedData[currentDateStr] || [];
-                const currentEntry = currentEntries.find(entry => 
-                    entry.date.getHours() === 12
-                ) || currentEntries[currentEntries.length - 1] || {};
+                // Get past data (2 days before)
+                const pastData = weatherData.past_data || [];
 
                 // Update UI headers
                 document.getElementById('date-range').textContent = 
-                    `Past (${pastDates.length ? formatDate(new Date(pastDates[0])) : '--'} to ${formatDate(new Date(currentDateStr))}), ` +
-                    `Current (${formatDate(new Date(currentDateStr))}), ` +
-                    `Forecast (${forecastDates.length ? formatDate(new Date(forecastDates[0])) : '--'} to ${forecastDates.length > 1 ? formatDate(new Date(forecastDates[1])) : '--'})`;
+                    `Past (June 30 to July 1, 2025), Current (July 2, 2025), Forecast (July 3-4, 2025)`;
 
-                document.getElementById('current-date-header').textContent = 
-                    `Current Weather (${formatDate(new Date(currentDateStr))})`;
-                document.getElementById('past-header').textContent = 
-                    `Past Weather (${pastDates.length ? formatDate(new Date(pastDates[0])) : '--'} to ${formatDate(new Date(currentDateStr))})`;
-                document.getElementById('forecast-header').textContent = 
-                    `Forecast (${forecastDates.length ? formatDate(new Date(forecastDates[0])) : '--'} to ${forecastDates.length > 1 ? formatDate(new Date(forecastDates[1])) : '--'})`;
-
-                // Display current weather
+                // Display current weather (noon or latest)
+                const currentEntry = currentDayData.find(entry => {
+                    const date = parseDate(entry);
+                    return date.getHours() === 12;
+                }) || currentDayData[currentDayData.length - 1] || {};
                 displayCurrentWeather(currentEntry);
 
+                // Display current day hourly weather (8 times)
+                displayHourlyWeather('current-hourly', currentDayData);
+
                 // Prepare data for charts
+                const allData = [...pastData, ...currentDayData, ...forecastData];
                 const chartLabels = [];
                 const tempData = [];
                 const humidityData = [];
                 const windData = [];
 
-                processedData.forEach(entry => {
-                    chartLabels.push(formatTableDate(entry.date));
-                    tempData.push(entry.temp_c);
-                    humidityData.push(entry.humidity);
-                    windData.push(entry.wind_kph ? entry.wind_kph / 3.6 : entry.wind_speed);
+                allData.forEach(entry => {
+                    const date = parseDate(entry);
+                    chartLabels.push(formatTableDate(date));
+                    tempData.push(entry.temp_c || entry.main?.temp || '--');
+                    humidityData.push(entry.humidity || entry.main?.humidity || '--');
+                    
+                    // Convert wind speed to m/s if needed
+                    let windSpeed = entry.wind_speed;
+                    if (entry.wind_kph) {
+                        windSpeed = entry.wind_kph / 3.6;
+                    } else if (entry.wind?.speed) {
+                        windSpeed = entry.wind.speed;
+                    }
+                    windData.push(windSpeed || '--');
                 });
 
                 // Create charts
                 createCharts(chartLabels, tempData, humidityData, windData);
 
-                // Display past weather table
-                displayWeatherTable('past-data', pastDates, groupedData);
+                // Display past weather table (4 times per day)
+                displayWeatherTable('past-data', pastData);
 
-                // Display forecast table
-                displayWeatherTable('forecast-data', forecastDates, groupedData);
+                // Display forecast (next days, 8 times per day)
+                displayForecast(forecastData);
 
             } catch (error) {
                 console.error('Error loading weather data:', error);
@@ -281,48 +263,194 @@
         }
 
         function displayCurrentWeather(entry) {
-            document.getElementById('current-icon').textContent = getWeatherIcon(entry.condition?.text || entry.weather);
-            document.getElementById('current-temp').textContent = `${entry.temp_c || '--'}°C`;
-            document.getElementById('current-weather').textContent = entry.condition?.text || entry.weather || '--';
-            document.getElementById('current-time').textContent = entry.date ? formatTime(entry.date) : '--:-- --';
-            document.getElementById('current-humidity').textContent = `${entry.humidity || '--'}%`;
-            document.getElementById('current-rain').textContent = `${entry.chance_of_rain || entry.rain_chance || '--'}%`;
-            document.getElementById('current-wind').textContent = `${entry.wind_kph ? (entry.wind_kph / 3.6).toFixed(1) : entry.wind_speed?.toFixed(1) || '--'} m/s`;
-            document.getElementById('current-feelslike').textContent = `${entry.feelslike_c || entry.temp_c || '--'}°C`;
+            document.getElementById('current-icon').textContent = getWeatherIcon(entry.condition?.text || entry.weather?.[0]?.description);
+            document.getElementById('current-temp').textContent = `${entry.temp_c || entry.main?.temp || '--'}°C`;
+            document.getElementById('current-weather').textContent = entry.condition?.text || entry.weather?.[0]?.description || '--';
+            document.getElementById('current-time').textContent = entry.time || entry.dt_txt || '--:-- --';
+            document.getElementById('current-humidity').textContent = `${entry.humidity || entry.main?.humidity || '--'}%`;
+            
+            // Rain chance
+            let rainChance = entry.chance_of_rain;
+            if (typeof entry.pop !== 'undefined') {
+                rainChance = entry.pop * 100;
+            }
+            document.getElementById('current-rain').textContent = `${rainChance || '--'}%`;
+            
+            // Wind speed
+            let windSpeed = entry.wind_speed;
+            if (entry.wind_kph) {
+                windSpeed = (entry.wind_kph / 3.6).toFixed(1);
+            } else if (entry.wind?.speed) {
+                windSpeed = entry.wind.speed.toFixed(1);
+            }
+            document.getElementById('current-wind').textContent = `${windSpeed || '--'} m/s`;
+            
+            // Feels like
+            const feelsLike = entry.feelslike_c || entry.main?.feels_like || entry.temp_c || entry.main?.temp || '--';
+            document.getElementById('current-feelslike').textContent = `${feelsLike}°C`;
         }
 
-        function displayWeatherTable(tableId, dates, groupedData) {
+        function displayHourlyWeather(containerId, hourlyData) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (!hourlyData || hourlyData.length === 0) {
+                container.innerHTML = '<p>No hourly data available</p>';
+                return;
+            }
+
+            hourlyData.forEach(entry => {
+                const date = parseDate(entry);
+                const time = formatTime(date);
+                
+                // Get weather description
+                let weatherDesc = entry.condition?.text;
+                if (!weatherDesc && entry.weather && entry.weather[0]) {
+                    weatherDesc = entry.weather[0].description;
+                }
+                
+                // Get temperature
+                const temp = entry.temp_c || entry.main?.temp || '--';
+                
+                // Get rain chance
+                let rainChance = entry.chance_of_rain;
+                if (typeof entry.pop !== 'undefined') {
+                    rainChance = Math.round(entry.pop * 100);
+                }
+                
+                // Get wind speed
+                let windSpeed = entry.wind_speed;
+                if (entry.wind_kph) {
+                    windSpeed = (entry.wind_kph / 3.6).toFixed(1);
+                } else if (entry.wind?.speed) {
+                    windSpeed = entry.wind.speed.toFixed(1);
+                }
+
+                container.innerHTML += `
+                    <div class="hourly-card">
+                        <div class="hourly-time">${time}</div>
+                        <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
+                        <div class="hourly-temp">${temp}°C</div>
+                        <div>${weatherDesc || '--'}</div>
+                        <small>Rain: ${rainChance || '--'}%</small><br>
+                        <small>Wind: ${windSpeed || '--'} m/s</small>
+                    </div>
+                `;
+            });
+        }
+
+        function displayWeatherTable(tableId, tableData) {
             const tableBody = document.getElementById(tableId);
             tableBody.innerHTML = '';
 
-            if (!dates.length) {
+            if (!tableData || tableData.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No data available</td></tr>';
                 return;
             }
 
-            dates.forEach(date => {
-                groupedData[date]?.forEach(entry => {
-                    const hour = entry.date.getHours();
-                    
-                    // Only show 6AM, 12PM, 6PM, 12AM
-                    if ([0, 6, 12, 18].includes(hour)) {
-                        tableBody.innerHTML += `
-                            <tr>
-                                <td>${formatTableDate(entry.date)}</td>
-                                <td><span class="weather-icon">${getWeatherIcon(entry.condition?.text || entry.weather)}</span> ${entry.condition?.text || entry.weather || '--'}</td>
-                                <td>${entry.temp_c || '--'}</td>
-                                <td>${entry.humidity || '--'}</td>
-                                <td>${entry.chance_of_rain || entry.rain_chance || '--'}</td>
-                                <td>${entry.wind_kph ? (entry.wind_kph / 3.6).toFixed(1) : entry.wind_speed?.toFixed(1) || '--'}</td>
-                            </tr>
-                        `;
+            tableData.forEach(entry => {
+                const date = parseDate(entry);
+                const hour = date.getHours();
+                
+                // Only show 6AM, 12PM, 6PM, 12AM for past data
+                if ([0, 6, 12, 18].includes(hour)) {
+                    // Get weather description
+                    let weatherDesc = entry.condition?.text;
+                    if (!weatherDesc && entry.weather && entry.weather[0]) {
+                        weatherDesc = entry.weather[0].description;
                     }
-                });
+                    
+                    // Get temperature
+                    const temp = entry.temp_c || entry.main?.temp || '--';
+                    
+                    // Get humidity
+                    const humidity = entry.humidity || entry.main?.humidity || '--';
+                    
+                    // Get rain chance
+                    let rainChance = entry.chance_of_rain;
+                    if (typeof entry.pop !== 'undefined') {
+                        rainChance = Math.round(entry.pop * 100);
+                    }
+                    
+                    // Get wind speed
+                    let windSpeed = entry.wind_speed;
+                    if (entry.wind_kph) {
+                        windSpeed = (entry.wind_kph / 3.6).toFixed(1);
+                    } else if (entry.wind?.speed) {
+                        windSpeed = entry.wind.speed.toFixed(1);
+                    }
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${formatTableDate(date)}</td>
+                            <td><span class="weather-icon">${getWeatherIcon(weatherDesc)}</span> ${weatherDesc || '--'}</td>
+                            <td>${temp}</td>
+                            <td>${humidity}</td>
+                            <td>${rainChance || '--'}</td>
+                            <td>${windSpeed || '--'}</td>
+                        </tr>
+                    `;
+                }
             });
 
             if (tableBody.innerHTML === '') {
                 tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No matching time points found</td></tr>';
             }
+        }
+
+        function displayForecast(forecastData) {
+            const container = document.getElementById('forecast-days');
+            container.innerHTML = '';
+
+            if (!forecastData || forecastData.length === 0) {
+                container.innerHTML = '<p>No forecast data available</p>';
+                return;
+            }
+
+            // Group forecast by day
+            const forecastByDay = {};
+            forecastData.forEach(entry => {
+                const date = parseDate(entry);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                if (!forecastByDay[dateStr]) {
+                    forecastByDay[dateStr] = [];
+                }
+                forecastByDay[dateStr].push(entry);
+            });
+
+            // Display each forecast day
+            Object.entries(forecastByDay).forEach(([dateStr, dayEntries]) => {
+                const date = new Date(dateStr);
+                const dayName = date.toLocaleDateString([], { weekday: 'long' });
+                const dateFormatted = formatDate(date);
+                
+                container.innerHTML += `
+                    <div class="mb-4">
+                        <h4>${dayName}, ${dateFormatted}</h4>
+                        <div class="hourly-weather">
+                            ${dayEntries.map(entry => {
+                                const time = formatTime(parseDate(entry));
+                                const weatherDesc = entry.weather?.[0]?.description || '--';
+                                const temp = entry.main?.temp || '--';
+                                const rainChance = Math.round((entry.pop || 0) * 100);
+                                const windSpeed = entry.wind?.speed?.toFixed(1) || '--';
+                                
+                                return `
+                                    <div class="hourly-card">
+                                        <div class="hourly-time">${time}</div>
+                                        <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
+                                        <div class="hourly-temp">${temp}°C</div>
+                                        <div>${weatherDesc}</div>
+                                        <small>Rain: ${rainChance}%</small><br>
+                                        <small>Wind: ${windSpeed} m/s</small>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         function createCharts(labels, tempData, humidityData, windData) {
