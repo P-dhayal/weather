@@ -24,6 +24,7 @@
         }
         .hourly-time { font-weight: bold; margin-bottom: 5px; }
         .hourly-temp { font-size: 1.2em; font-weight: bold; }
+        .weather-icon { font-size: 1.5em; vertical-align: middle; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -184,7 +185,7 @@
                 const weatherData = await response.json();
                 
                 // Find current date (July 2, 2025)
-                const currentDate = new Date('2025-07-02T00:00:00');
+                const currentDate = new Date('2025-07-02T00:00 dejamos
                 const currentDateStr = currentDate.toISOString().split('T')[0];
                 
                 // Get current day data (8 times per day)
@@ -397,6 +398,7 @@
                                 return `
                                     <div class="hourly-card">
                                         <div class="hourly-time">${time}</div>
+                                        <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
                                         <div class="hourly-temp">${temp}°C</div>
                                         <div>${weatherDesc}</div>
                                         <small>Rain: ${rainChance}%</small><br>
@@ -435,6 +437,7 @@
                                 return `
                                     <div class="hourly-card">
                                         <div class="hourly-time">${time}</div>
+                                        <div class="weather-icon">${getWeatherIcon(weatherDesc)}</div>
                                         <div class="hourly-temp">${temp}°C</div>
                                         <div>${weatherDesc}</div>
                                         <small>Rain: ${rainChance}%</small><br>
