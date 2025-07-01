@@ -19,7 +19,7 @@
         .hourly-card { 
             flex: 1 1 200px; 
             background: white; 
-            border-radius: 8px;
+            border-radius: 8px; 
             padding: 15px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             text-align: center;
@@ -34,9 +34,13 @@
         <p class="mb-0" id="date-range">Loading date range...</p>
     </div>
 
-
-                <!-- Hourly weather for current day -->
-                <h4 class="mt-4">Hourly Weather - July 2</h4>
+    <div class="container py-4">
+        <!-- Current Weather Section -->
+        <div class="weather-card card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Hourly Weather - July 2, 2025</h2>
+            </div>
+            <div class="card-body">
                 <div class="hourly-weather" id="current-hourly">
                     <!-- Filled by JavaScript -->
                 </div>
@@ -112,7 +116,7 @@
         <!-- Forecast Section -->
         <div class="weather-card card mb-4">
             <div class="card-header bg-success text-white">
-                <h2 class="mb-0" id="forecast-header">Forecast</h2>
+                <h2 class="mb-0" id="forecast-header">Forecast - Next 2 Days</h2>
             </div>
             <div class="card-body">
                 <div id="forecast-days">
@@ -191,13 +195,6 @@
                 document.getElementById('date-range').textContent = 
                     `Past (June 30 to July 1, 2025), Current (July 2, 2025), Forecast (July 3-4, 2025)`;
 
-                // Display current weather (noon or latest)
-                const currentEntry = currentDayData.find(entry => {
-                    const date = parseDate(entry);
-                    return date.getHours() === 12;
-                }) || currentDayData[currentDayData.length - 1] || {};
-                displayCurrentWeather(currentEntry);
-
                 // Display current day hourly weather (8 times)
                 displayHourlyWeather('current-hourly', currentDayData);
 
@@ -230,41 +227,13 @@
                 // Display past weather table (4 times per day)
                 displayWeatherTable('past-data', pastData);
 
-                // Display forecast (next days, 8 times per day)
+                // Display forecast (next 2 days, 8 times per day)
                 displayForecast(forecastData);
 
             } catch (error) {
                 console.error('Error loading weather data:', error);
-                document.getElementById('current-weather').textContent = 'Error loading data';
+                document.getElementById('current-hourly').innerHTML = '<p>Error loading weather data</p>';
             }
-        }
-
-        function displayCurrentWeather(entry) {
-            document.getElementById('current-icon').textContent = getWeatherIcon(entry.condition?.text || entry.weather?.[0]?.description);
-            document.getElementById('current-temp').textContent = `${entry.temp_c || entry.main?.temp || '--'}°C`;
-            document.getElementById('current-weather').textContent = entry.condition?.text || entry.weather?.[0]?.description || '--';
-            document.getElementById('current-time').textContent = entry.time || entry.dt_txt || '--:-- --';
-            document.getElementById('current-humidity').textContent = `${entry.humidity || entry.main?.humidity || '--'}%`;
-            
-            // Rain chance
-            let rainChance = entry.chance_of_rain;
-            if (typeof entry.pop !== 'undefined') {
-                rainChance = entry.pop * 100;
-            }
-            document.getElementById('current-rain').textContent = `${rainChance || '--'}%`;
-            
-            // Wind speed
-            let windSpeed = entry.wind_speed;
-            if (entry.wind_kph) {
-                windSpeed = (entry.wind_kph / 3.6).toFixed(1);
-            } else if (entry.wind?.speed) {
-                windSpeed = entry.wind.speed.toFixed(1);
-            }
-            document.getElementById('current-wind').textContent = `${windSpeed || '--'} m/s`;
-            
-            // Feels like
-            const feelsLike = entry.feelslike_c || entry.main?.feels_like || entry.temp_c || entry.main?.temp || '--';
-            document.getElementById('current-feelslike').textContent = `${feelsLike}°C`;
         }
 
         function displayHourlyWeather(containerId, hourlyData) {
@@ -390,14 +359,22 @@
                 const date = parseDate(entry);
                 const dateStr = date.toISOString().split('T')[0];
                 
+                // Skip current day (July 2)
+                if (dateStr === '2025-07-02') return;
+                
                 if (!forecastByDay[dateStr]) {
                     forecastByDay[dateStr] = [];
                 }
                 forecastByDay[dateStr].push(entry);
             });
 
+            // Sort dates and take only next 2 days
+            const sortedDates = Object.keys(forecastByDay).sort();
+            const nextTwoDays = sortedDates.slice(0, 2);
+
             // Display each forecast day
-            Object.entries(forecastByDay).forEach(([dateStr, dayEntries]) => {
+            nextTwoDays.forEach(dateStr => {
+                const dayEntries = forecastByDay[dateStr];
                 const date = new Date(dateStr);
                 const dayName = date.toLocaleDateString([], { weekday: 'long' });
                 const dateFormatted = formatDate(date);
