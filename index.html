@@ -1,67 +1,79 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anupgarh Weather Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Anupgarh Weather Dashboard</h1>
-        <p id="date-range">Historical, Current, and Forecast Weather</p>
+        <h3 id="date-range">Historical, Current, and Forecast Weather</h3>
 
-        <!-- Current Weather -->
         <h2>Current Weather</h2>
-        <div id="current-weather">
-            <p id="current-time"></p>
-            <p id="current-temp"></p>
-            <p id="current-humidity"></p>
-            <p id="current-weather"></p>
-            <p id="current-rain"></p>
-            <p id="current-wind"></p>
+        <div>
+            <p id="current-time">Time: </p>
+            <p id="current-temp">Temperature: </p>
+            <p id="current-humidity">Humidity: </p>
+            <p id="current-weather">Weather: </p>
+            <p id="current-rain">Rain Chance: </p>
+            <p id="current-wind">Wind Speed: </p>
         </div>
 
-        <!-- Historical Weather -->
         <h2>Historical Weather</h2>
         <table id="historical-table">
             <thead>
@@ -77,7 +89,6 @@
             <tbody id="historical-body"></tbody>
         </table>
 
-        <!-- Forecast Weather -->
         <h2>Forecast</h2>
         <table id="forecast-table">
             <thead>
@@ -93,7 +104,6 @@
             <tbody id="forecast-body"></tbody>
         </table>
 
-        <!-- Graphs -->
         <h2>Weather Graphs</h2>
         <div class="chart-container">
             <h3>Temperature (°C)</h3>
@@ -110,6 +120,215 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <script>
+        const weatherapiKey = "28dc457030ec4e69bfe131408250107";
+        const owmApiKey = "ac1a9ad688dee52dfd615f7f65f230cf";
+        const lat = 29.1911;
+        const lon = 73.2086;
+
+        async function getHistoricalData(date) {
+            const url = `http://api.weatherapi.com/v1/history.json?key=${weatherapiKey}&q=${lat},${lon}&dt=${date}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (!data.error) {
+                    console.log(`Historical data for ${date}:`, data);
+                    return data.forecast.forecastday[0].hour;
+                } else {
+                    console.error(`Historical error for ${date}: ${data.error.message}`);
+                    return [];
+                }
+            } catch (e) {
+                console.error(`Historical fetch error for ${date}: ${e}`);
+                return [];
+            }
+        }
+
+        async function getCurrentWeather() {
+            const url = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${owmApiKey}&units=metric`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.cod === 200) {
+                    console.log("Current weather:", data);
+                    return data;
+                } else {
+                    console.error(`Current weather error: ${data.message}`);
+                    return null;
+                }
+            } catch (e) {
+                console.error(`Current weather fetch error: ${e}`);
+                return null;
+            }
+        }
+
+        async function getForecastData() {
+            const url = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${owmApiKey}&units=metric`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.cod === "200") {
+                    console.log("Forecast data:", data.list);
+                    return data.list.slice(0, 4); // 12 hours
+                } else {
+                    console.error(`Forecast error: ${data.message}`);
+                    return [];
+                }
+            } catch (e) {
+                console.error(`Forecast fetch error: ${e}`);
+                return [];
+            }
+        }
+
+        function displayCurrentWeather(data) {
+            if (!data) return;
+            const time = new Date(data.dt * 1000).toLocaleString();
+            document.getElementById("current-time").innerText = `Time: ${time}`;
+            document.getElementById("current-temp").innerText = `Temperature: ${data.main.temp}°C`;
+            document.getElementById("current-humidity").innerText = `Humidity: ${data.main.humidity}%`;
+            document.getElementById("current-weather").innerText = `Weather: ${data.weather[0].description}`;
+            document.getElementById("current-rain").innerText = `Rain Chance: ${data.rain ? data.rain["1h"] || 0 : 0} mm`;
+            document.getElementById("current-wind").innerText = `Wind Speed: ${data.wind.speed} m/s`;
+        }
+
+        function displayHistoricalData(data) {
+            const tbody = document.getElementById("historical-body");
+            data.forEach(hour => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${hour.time}</td>
+                    <td>${hour.temp_c}</td>
+                    <td>${hour.humidity}</td>
+                    <td>${hour.condition.text}</td>
+                    <td>${hour.chance_of_rain || 0}</td>
+                    <td>${(hour.wind_kph / 3.6).toFixed(1)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function displayForecastData(data) {
+            const tbody = document.getElementById("forecast-body");
+            data.forEach(forecast => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${forecast.dt_txt}</td>
+                    <td>${forecast.main.temp}</td>
+                    <td>${forecast.main.humidity}</td>
+                    <td>${forecast.weather[0].description}</td>
+                    <td>${(forecast.pop * 100).toFixed(0)}</td>
+                    <td>${forecast.wind.speed.toFixed(1)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function createGraphs(historical, forecast) {
+            const times = historical.map(h => h.time).concat(forecast.map(f => f.dt_txt));
+            const temps = historical.map(h => h.temp_c).concat(forecast.map(f => f.main.temp));
+            const humidities = historical.map(h => h.humidity).concat(forecast.map(f => f.main.humidity));
+            const winds = historical.map(h => h.wind_kph / 3.6).concat(forecast.map(f => f.wind.speed));
+
+            new Chart(document.getElementById("temp-chart"), {
+                type: "line",
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: "Temperature (°C)",
+                        data: temps,
+                        borderColor: "#4CAF50",
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "Temperature (°C)" } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById("humidity-chart"), {
+                type: "line",
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: "Humidity (%)",
+                        data: humidities,
+                        borderColor: "#2196F3",
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "Humidity (%)" } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById("wind-chart"), {
+                type: "line",
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: "Wind Speed (m/s)",
+                        data: winds,
+                        borderColor: "#FF9800",
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "Wind Speed (m/s)" } }
+                    }
+                }
+            });
+        }
+
+        async function init() {
+            const today = new Date();
+            const todayStr = today.toISOString().split("T")[0];
+            const historicalDates = [];
+
+            // Calculate previous 3 days (use 2024 for testing)
+            for (let i = 3; i > 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i - 365); // Go back 1 year
+                historicalDates.push(date.toISOString().split("T")[0]);
+            }
+
+            // Update date range in HTML
+            const startDate = historicalDates[0];
+            const endDate = new Date(today);
+            endDate.setDate(today.getDate() + 2);
+            document.getElementById("date-range").innerText = `Historical (${startDate} to ${historicalDates[2]}), Current (${todayStr}), and Forecast (${todayStr} to ${endDate.toISOString().split("T")[0]})`;
+            document.getElementsByTagName("h2")[0].innerText = `Current Weather (${todayStr})`;
+            document.getElementsByTagName("h2")[1].innerText = `Historical Weather (${startDate} to ${historicalDates[2]})`;
+            document.getElementsByTagName("h2")[2].innerText = `Forecast (${todayStr} to ${endDate.toISOString().split("T")[0]})`;
+
+            // Fetch historical data
+            const historical = [];
+            for (const date of historicalDates) {
+                const data = await getHistoricalData(date);
+                historical.push(...data);
+            }
+
+            // Fetch current and forecast data
+            const current = await getCurrentWeather();
+            const forecast = await getForecastData();
+
+            // Display data
+            displayCurrentWeather(current);
+            displayHistoricalData(historical);
+            displayForecastData(forecast);
+
+            // Create graphs
+            createGraphs(historical, forecast);
+        }
+
+        init();
+    </script>
 </body>
 </html>
