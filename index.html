@@ -357,16 +357,21 @@
             const day1Str = '2025-07-03';
             const day2Str = '2025-07-04';
 
-            // Filter forecast data for July 3 and 4
-            const day1Entries = forecastData.filter(entry => {
-                const date = parseDate(entry);
-                return date.toISOString().split('T')[0] === day1Str;
-            });
+            // Filter and sort forecast data for July 3
+            const day1Entries = forecastData
+                .filter(entry => {
+                    const date = parseDate(entry);
+                    return date.toISOString().split('T')[0] === day1Str;
+                })
+                .sort((a, b) => parseDate(a).getTime() - parseDate(b).getTime());
 
-            const day2Entries = forecastData.filter(entry => {
-                const date = parseDate(entry);
-                return date.toISOString().split('T')[0] === day2Str;
-            });
+            // Filter and sort forecast data for July 4
+            const day2Entries = forecastData
+                .filter(entry => {
+                    const date = parseDate(entry);
+                    return date.toISOString().split('T')[0] === day2Str;
+                })
+                .sort((a, b) => parseDate(a).getTime() - parseDate(b).getTime());
 
             // Display July 3
             if (day1Entries.length > 0) {
