@@ -131,29 +131,9 @@
     </footer>
 
     <script>
-        // Improved weather icon mapping with day/night support
+        // Use only cloud icon for all weather conditions
         function getWeatherIcon(weather, isDay = 1) {
-            if (!weather) return isDay ? '🌤️' : '🌙';
-            weather = weather.toLowerCase();
-            
-            // Night-specific icons
-            if (!isDay) {
-                if (weather.includes('clear')) return '🌙';
-                if (weather.includes('cloud')) return '☁️';
-                if (weather.includes('rain')) return '🌧️';
-                if (weather.includes('thunder')) return '⚡';
-                return '🌙'; // Default night icon
-            }
-            
-            // Daytime icons
-            if (weather.includes('rain')) return '🌧️';
-            if (weather.includes('drizzle')) return '🌦️';
-            if (weather.includes('cloud')) return '☁️';
-            if (weather.includes('sun') || weather.includes('clear')) return '☀️';
-            if (weather.includes('thunder')) return '⚡';
-            if (weather.includes('fog') || weather.includes('mist')) return '🌫️';
-            if (weather.includes('snow')) return '❄️';
-            return '🌤️'; // Default daytime icon
+            return '☁️';
         }
 
         // Parse date from different formats in the JSON
@@ -191,7 +171,6 @@
             if (entry.sys && entry.sys.pod) {
                 return entry.sys.pod === 'd';
             }
-            // Default to day if we can't determine
             return true;
         }
 
@@ -388,7 +367,7 @@
             const day1Str = nextDay1.toISOString().split('T')[0];
             const day2Str = nextDay2.toISOString().split('T')[0];
 
-            // Filter forecast data for only July 3 and 4
+            // Filter forecast data for July 3 and 4
             const day1Entries = forecastData.filter(entry => {
                 const date = parseDate(entry);
                 return date.toISOString().split('T')[0] === day1Str;
@@ -407,12 +386,13 @@
                         <h4>${dayName}, 3rd July</h4>
                         <div class="hourly-weather">
                             ${day1Entries.map(entry => {
-                                const time = formatTime(parseDate(entry));
-                                const weatherDesc = entry.weather?.[0]?.description || '--';
-                                const isDay = entry.sys?.pod === 'd';
-                                const temp = entry.main?.temp || '--';
-                                const rainChance = Math.round((entry.pop || 0) * 100);
-                                const windSpeed = entry.wind?.speed?.toFixed(1) || '--';
+                                const date = parseDate(entry);
+                                const time = formatTime(date);
+                                const weatherDesc = entry.weather?.[0]?.description || entry.condition?.text || '--';
+                                const isDay = isDayTime(entry);
+                                const temp = entry.main?.temp || entry.temp_c || '--';
+                                const rainChance = Math.round((entry.pop || entry.chance_of_rain || 0) * 100);
+                                const windSpeed = (entry.wind?.speed || entry.wind_speed || (entry.wind_kph ? entry.wind_kph / 3.6 : 0)).toFixed(1) || '--';
                                 
                                 return `
                                     <div class="hourly-card">
@@ -428,6 +408,13 @@
                         </div>
                     </div>
                 `;
+            } else {
+                container.innerHTML += `
+                    <div class="mb-4">
+                        <h4>Wednesday, 3rd July</h4>
+                        <p>No forecast data available for this day</p>
+                    </div>
+                `;
             }
 
             // Display July 4
@@ -438,12 +425,13 @@
                         <h4>${dayName}, 4th July</h4>
                         <div class="hourly-weather">
                             ${day2Entries.map(entry => {
-                                const time = formatTime(parseDate(entry));
-                                const weatherDesc = entry.weather?.[0]?.description || '--';
-                                const isDay = entry.sys?.pod === 'd';
-                                const temp = entry.main?.temp || '--';
-                                const rainChance = Math.round((entry.pop || 0) * 100);
-                                const windSpeed = entry.wind?.speed?.toFixed(1) || '--';
+                                const date = parseDate(entry);
+                                const time = formatTime(date);
+                                const weatherDesc = entry.weather?.[0]?.description || entry.condition?.text || '--';
+                                const isDay = isDayTime(entry);
+                                const temp = entry.main?.temp || entry.temp_c || '--';
+                                const rainChance = Math.round((entry.pop || entry.chance_of_rain || 0) * 100);
+                                const windSpeed = (entry.wind?.speed || entry.wind_speed || (entry.wind_kph ? entry.wind_kph / 3.6 : 0)).toFixed(1) || '--';
                                 
                                 return `
                                     <div class="hourly-card">
@@ -457,6 +445,13 @@
                                 `;
                             }).join('')}
                         </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML += `
+                    <div class="mb-4">
+                        <h4>Thursday, 4th July</h4>
+                        <p>No forecast data available for this day</p>
                     </div>
                 `;
             }
