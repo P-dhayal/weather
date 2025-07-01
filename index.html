@@ -81,7 +81,7 @@
             <tbody id="historical-body"></tbody>
         </table>
 
-        <h2>Forecast (Next 12 Hours)</h2>
+        <h2>Forecast (Next 2 Days)</h2>
         <table id="forecast-table">
             <thead>
                 <tr>
@@ -175,7 +175,17 @@
                 const data = await response.json();
                 if (data.cod === "200") {
                     console.log("Forecast data:", data.list);
-                    return data.list.slice(0, 4); // 12 hours
+                    // Select 4 time points per day (00:00, 06:00, 12:00, 18:00) for July 2 and 3
+                    const forecast = [];
+                    const targetTimes = ["00:00:00", "06:00:00", "12:00:00", "18:00:00"];
+                    const targetDates = ["2025-07-02", "2025-07-03"];
+                    for (const date of targetDates) {
+                        for (const time of targetTimes) {
+                            const target = data.list.find(item => item.dt_txt.includes(date) && item.dt_txt.includes(time));
+                            if (target) forecast.push(target);
+                        }
+                    }
+                    return forecast.slice(0, 8); // Ensure max 8 points (4 per day for 2 days)
                 } else {
                     console.error(`Forecast error: ${data.message}`);
                     return [];
@@ -298,8 +308,8 @@
             const todayStr = today.toISOString().split("T")[0];
             const historicalDates = [];
 
-            // Calculate 3 days back (June 28–30, 2025)
-            for (let i = 3; i > 0; i--) {
+            // Automatically calculate the previous 2 days (e.g., June 29–30, 2025)
+            for (let i = 2; i > 0; i--) {
                 const date = new Date(today);
                 date.setDate(today.getDate() - i);
                 historicalDates.push(date.toISOString().split("T")[0]);
@@ -307,12 +317,11 @@
 
             // Update date range in HTML
             const startDate = historicalDates[0];
-            const endDate = new Date(today);
-            endDate.setDate(today.getDate() + 2);
-            document.getElementById("date-range").innerText = `Historical (${startDate} to ${historicalDates[2]}), Current (${todayStr}), and Forecast (${todayStr} to ${endDate.toISOString().split("T")[0]})`;
+            const endDate = "2025-07-03"; // Forecast up to July 3
+            document.getElementById("date-range").innerText = `Historical (${startDate} to ${historicalDates[1]}), Current (${todayStr}), and Forecast (${todayStr} to ${endDate})`;
             document.getElementsByTagName("h2")[0].innerText = `Current Weather (${todayStr})`;
-            document.getElementsByTagName("h2")[1].innerText = `Historical Weather (${startDate} to ${historicalDates[2]})`;
-            document.getElementsByTagName("h2")[2].innerText = `Forecast (${todayStr} to ${endDate.toISOString().split("T")[0]})`;
+            document.getElementsByTagName("h2")[1].innerText = `Historical Weather (${startDate} to ${historicalDates[1]})`;
+            document.getElementsByTagName("h2")[2].innerText = `Forecast (${todayStr} to ${endDate})`;
 
             // Fetch historical data (4 time points per day)
             const historical = [];
